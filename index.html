@@ -1,127 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>USDT Miner</title>
-<meta name="theme-color" content="#22c55e" />
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>USDT Miner</title>
+  <meta name="theme-color" content="#22c55e" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: radial-gradient(circle, #0a0a0a, #181818);
-    color: #fff;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-  }
-  .container {
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(15px);
-    border-radius: 15px;
-    padding: 25px 30px;
-    box-shadow: 0 0 30px rgba(255, 204, 0, 0.3);
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
-  }
-  h2 {
-    color: #facc15;
-    margin-bottom: 10px;
-    font-weight: 600;
-  }
-  .usdt-icon {
-    width: 60px;
-    height: 60px;
-    margin-bottom: 15px;
-    fill: #facc15;
-  }
-  .balance {
-    font-size: 2.2em;
-    margin: 20px 0;
-    color: #facc15;
-    font-weight: 600;
-    min-height: 40px;
-  }
-  button {
-    background-color: #facc15;
-    border: none;
-    padding: 12px 0;
-    margin-top: 10px;
-    border-radius: 8px;
-    color: #000;
-    font-size: 1.1em;
-    font-weight: 600;
-    cursor: pointer;
-    width: 100%;
-    transition: background 0.3s ease;
-  }
-  button:hover {
-    background-color: #ffcd00;
-  }
-  .section {
-    margin-top: 25px;
-    text-align: left;
-  }
-  .section h4 {
-    margin-bottom: 10px;
-    border-bottom: 1px solid #ffffff33;
-    padding-bottom: 5px;
-    color: #facc15;
-  }
-  .history {
-    background: #0f172a;
-    padding: 10px;
-    border-radius: 5px;
-    max-height: 130px;
-    overflow-y: auto;
-    font-size: 0.9em;
-    color: #cbd5e1;
-    white-space: pre-wrap;
-  }
-  @media (max-width: 480px) {
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle, #0a0a0a, #181818);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(15px);
+      border-radius: 15px;
+      padding: 25px 30px;
+      box-shadow: 0 0 30px rgba(255, 204, 0, 0.3);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h2 {
+      color: #facc15;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .usdt-icon {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 15px;
+    }
+
     .balance {
-      font-size: 1.6em;
+      font-size: 2.2em;
+      margin: 20px 0;
+      color: #facc15;
+      font-weight: 600;
+      min-height: 40px;
     }
+
     button {
-      font-size: 1em;
-      padding: 10px 0;
+      background-color: #facc15;
+      border: none;
+      padding: 12px 0;
+      margin-top: 10px;
+      border-radius: 8px;
+      color: #000;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.3s ease;
     }
-  }
-</style>
+
+    button:hover {
+      background-color: #ffcd00;
+    }
+
+    .section {
+      margin-top: 25px;
+      text-align: left;
+    }
+
+    .section h4 {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ffffff33;
+      padding-bottom: 5px;
+      color: #facc15;
+    }
+
+    .history {
+      background: #0f172a;
+      padding: 10px;
+      border-radius: 5px;
+      max-height: 130px;
+      overflow-y: auto;
+      font-size: 0.9em;
+      color: #cbd5e1;
+      white-space: pre-wrap;
+    }
+
+    .referral-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .referral-content {
+      background: #111827;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 350px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .referral-code-box {
+      background: #1f2937;
+      padding: 10px;
+      border-radius: 6px;
+      margin: 15px 0;
+      font-weight: bold;
+      color: #facc15;
+      letter-spacing: 1px;
+    }
+
+    .copy-btn {
+      background-color: #10b981;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .close-btn {
+      margin-top: 15px;
+      background: transparent;
+      color: #aaa;
+      font-size: 0.9em;
+      border: none;
+      cursor: pointer;
+    }
+
+    @media (max-width: 480px) {
+      .balance {
+        font-size: 1.6em;
+      }
+
+      button {
+        font-size: 1em;
+        padding: 10px 0;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- Inline SVG USDT logo -->
-  <svg class="usdt-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-label="USDT logo" role="img">
-    <circle cx="16" cy="16" r="16" fill="#26A17B"/>
-    <path fill="#fff" d="M24.67 14.36c-.07-.19-.3-.37-.66-.54a5.87 5.87 0 0 0-2.03-.56 5.17 5.17 0 0 0-2.08.4 5.14 5.14 0 0 0-1.86 1.12 5.08 5.08 0 0 0-1.24 2.1 5.38 5.38 0 0 0-.22 1.46v.07a4.72 4.72 0 0 0 .22 1.38 4.49 4.49 0 0 0 1.15 2.05 4.6 4.6 0 0 0 1.9 1.16 5.39 5.39 0 0 0 2.27.47 7.4 7.4 0 0 0 1.45-.12 3.07 3.07 0 0 0 1.18-.46l.11-.1a.51.51 0 0 0 .13-.49c-.02-.05-.05-.09-.08-.13l-.09-.12c-.07-.12-.12-.25-.2-.38a.94.94 0 0 0-.32-.33 1 1 0 0 0-.53-.13h-.29a.52.52 0 0 1-.43-.22.72.72 0 0 1-.11-.34.87.87 0 0 1 .19-.57.66.66 0 0 1 .53-.25h.36a3 3 0 0 1 .64.14c.31.11.61.28.91.47l.17.11a.48.48 0 0 0 .51 0 .46.46 0 0 0 .17-.42 4.2 4.2 0 0 0-.08-.3 4.3 4.3 0 0 0-.43-1.07 4.8 4.8 0 0 0-1.23-1.74 4.72 4.72 0 0 0-1.88-1.17 5 5 0 0 0-2.4-.5 7.14 7.14 0 0 0-2.29.4 3.6 3.6 0 0 0-1.28 1 3.24 3.24 0 0 0-.91 1.83 4.22 4.22 0 0 0-.12 1.13c0 .08 0 .16 0 .25a4.33 4.33 0 0 0 .18 1.43 3.71 3.71 0 0 0 1.1 1.77 3.92 3.92 0 0 0 1.75.9 5.7 5.7 0 0 0 1.58.21 4.82 4.82 0 0 0 1.46-.3 2.41 2.41 0 0 0 1.17-.89c.08-.12.14-.24.2-.37a.48.48 0 0 0-.09-.56Zm-3.4 3.67a.73.73 0 0 1-.5.13.58.58 0 0 1-.4-.18 2.26 2.26 0 0 1-.45-.66 2.65 2.65 0 0 1-.15-1.36 1.88 1.88 0 0 1 .39-.8 1.36 1.36 0 0 1 .6-.5.6.6 0 0 1 .43 0 .6.6 0 0 1 .29.42 3.45 3.45 0 0 1 0 1.72 1.19 1.19 0 0 1-.22.63Z"/>
-  </svg>
+  <div class="container">
+    <!-- USDT SVG Logo -->
+    <img class="usdt-icon" src="https://cryptologos.cc/logos/tether-usdt-logo.png?v=032" alt="USDT Logo" />
 
-  <h2>USDT Miner</h2>
-  <div class="balance" id="balance">0.00000000</div>
-  <button id="withdraw-btn">Withdraw</button>
+    <h2>USDT Miner</h2>
+    <div class="balance" id="balance">0.00000000</div>
 
-  <div class="section">
-    <h4>Withdraw History</h4>
-    <div class="history" id="withdraw-history">No withdrawals yet.</div>
+    <button id="withdraw-btn">Withdraw</button>
+    <button id="referral-btn">Referrals</button>
+
+    <div class="section">
+      <h4>Withdraw History</h4>
+      <div class="history" id="withdraw-history">No withdrawals yet.</div>
+    </div>
   </div>
-</div>
+
+  <!-- Referrals Modal -->
+  <div class="referral-modal" id="referral-modal">
+    <div class="referral-content">
+      <h3>Your Referral Code</h3>
+      <div class="referral-code-box" id="ref-code-box">REF-XXXXXX</div>
+      <button class="copy-btn" id="copy-ref">Copy</button>
+      <br>
+      <button class="close-btn" onclick="closeReferral()">Close</button>
+    </div>
+  </div>
 
 <script>
   let balance = 0;
   let miningStarted = false;
   let withdrawHistory = [];
 
-  // Smooth increment parameters
-  const targetIncrementPerSecond = 30 / 60; // 0.5 USDT per second (example)
-  const updateInterval = 100; // ms
-  const incrementPerTick = targetIncrementPerSecond * (updateInterval / 1000);
+  const updateInterval = 100;
+  const incrementPerTick = 0.5 * (updateInterval / 1000);
 
   function startMining() {
     if (miningStarted) return;
@@ -134,50 +202,59 @@
   }
 
   function updateBalance() {
-    // Fix: update balance text smoothly without jitter
-    const balanceEl = document.getElementById('balance');
-    balanceEl.textContent = balance.toFixed(8);
+    document.getElementById('balance').textContent = balance.toFixed(8);
   }
 
   function withdraw() {
-    const minWithdrawal = 500;
-    if (balance < minWithdrawal) {
-      alert(`Minimum withdrawal is ${minWithdrawal} USDT. Your balance is only ${balance.toFixed(8)}.`);
+    const min = 500;
+    if (balance < min) {
+      alert(`Minimum withdrawal is ${min} USDT.`);
       return;
     }
-
     const amount = balance.toFixed(8);
     const timestamp = new Date().toLocaleString();
-
     withdrawHistory.unshift(`${amount} USDT withdrawn on ${timestamp}`);
-    if (withdrawHistory.length > 10) withdrawHistory.pop(); // Keep last 10
-
-    updateWithdrawHistory();
-
-    alert(`Successfully withdrawn ${amount} USDT!`);
+    if (withdrawHistory.length > 10) withdrawHistory.pop();
     balance = 0;
     updateBalance();
+    updateWithdrawHistory();
+    alert(`Successfully withdrawn ${amount} USDT!`);
   }
 
   function updateWithdrawHistory() {
-    const historyEl = document.getElementById('withdraw-history');
-    if (withdrawHistory.length === 0) {
-      historyEl.textContent = 'No withdrawals yet.';
-      return;
-    }
-    historyEl.innerHTML = withdrawHistory.map(item => `<div>${item}</div>`).join('');
+    const el = document.getElementById('withdraw-history');
+    el.innerHTML = withdrawHistory.map(h => `<div>${h}</div>`).join('') || 'No withdrawals yet.';
   }
 
-  window.onload = () => {
-    // Generate new referral code on every load (not stored anywhere)
-    // (Removed referral logic completely)
+  function generateReferralCode() {
+    return 'REF-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  }
 
+  function openReferral() {
+    const code = generateReferralCode();
+    document.getElementById('ref-code-box').textContent = code;
+    document.getElementById('referral-modal').style.display = 'flex';
+  }
+
+  function closeReferral() {
+    document.getElementById('referral-modal').style.display = 'none';
+  }
+
+  document.getElementById('withdraw-btn').addEventListener('click', withdraw);
+  document.getElementById('referral-btn').addEventListener('click', openReferral);
+
+  document.getElementById('copy-ref').addEventListener('click', () => {
+    const code = document.getElementById('ref-code-box').textContent;
+    navigator.clipboard.writeText(`Join USDT Miner with my code: ${code}`)
+      .then(() => alert("Copied to clipboard!"))
+      .catch(() => alert("Copy failed"));
+  });
+
+  window.onload = () => {
     updateBalance();
     updateWithdrawHistory();
     startMining();
   };
-
-  document.getElementById('withdraw-btn').addEventListener('click', withdraw);
 </script>
 
 </body>
