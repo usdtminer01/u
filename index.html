@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>USDT Miner</title>
-  <meta name="theme-color" content="#22c55e" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>USDT Miner Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
     body {
       font-family: 'Poppins', sans-serif;
       background: radial-gradient(circle, #0a0a0a, #181818);
@@ -17,49 +15,44 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
     }
 
     .container {
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.7);
       backdrop-filter: blur(15px);
       border-radius: 15px;
-      padding: 25px 30px;
+      padding: 30px;
       box-shadow: 0 0 30px rgba(255, 204, 0, 0.3);
       max-width: 400px;
       width: 90%;
       text-align: center;
     }
 
-    h2 {
-      color: #facc15;
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-
     .usdt-icon {
-      width: 60px;
-      height: 60px;
+      width: 50px;
       margin-bottom: 15px;
     }
 
+    h2 {
+      color: #facc15;
+      margin-bottom: 10px;
+    }
+
     .balance {
-      font-size: 2.2em;
+      font-size: 2em;
       margin: 20px 0;
       color: #facc15;
-      font-weight: 600;
-      min-height: 40px;
     }
 
     button {
       background-color: #facc15;
       border: none;
-      padding: 12px 0;
+      padding: 10px 20px;
       margin-top: 10px;
       border-radius: 8px;
       color: #000;
-      font-size: 1.1em;
-      font-weight: 600;
+      font-size: 1em;
       cursor: pointer;
       width: 100%;
       transition: background 0.3s ease;
@@ -76,7 +69,7 @@
 
     .section h4 {
       margin-bottom: 10px;
-      border-bottom: 1px solid #ffffff33;
+      border-bottom: 1px solid #ffffff;
       padding-bottom: 5px;
       color: #facc15;
     }
@@ -85,86 +78,20 @@
       background: #0f172a;
       padding: 10px;
       border-radius: 5px;
-      max-height: 130px;
+      max-height: 120px;
       overflow-y: auto;
       font-size: 0.9em;
       color: #cbd5e1;
-      white-space: pre-wrap;
-    }
-
-    .referral-modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(5px);
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
-
-    .referral-content {
-      background: #111827;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 350px;
-      text-align: center;
-      color: #fff;
-    }
-
-    .referral-code-box {
-      background: #1f2937;
-      padding: 10px;
-      border-radius: 6px;
-      margin: 15px 0;
-      font-weight: bold;
-      color: #facc15;
-      letter-spacing: 1px;
-    }
-
-    .copy-btn {
-      background-color: #10b981;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .close-btn {
-      margin-top: 15px;
-      background: transparent;
-      color: #aaa;
-      font-size: 0.9em;
-      border: none;
-      cursor: pointer;
-    }
-
-    @media (max-width: 480px) {
-      .balance {
-        font-size: 1.6em;
-      }
-
-      button {
-        font-size: 1em;
-        padding: 10px 0;
-      }
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <!-- USDT SVG Logo -->
-    <img class="usdt-icon" src="https://cryptologos.cc/logos/tether-usdt-logo.png?v=032" alt="USDT Logo" />
-
+    <img class="usdt-icon" src="https://cryptologos.cc/logos/tether-usdt-logo.png" alt="USDT Logo" />
     <h2>USDT Miner</h2>
-    <div class="balance" id="balance">0.00000000</div>
-
-    <button id="withdraw-btn">Withdraw</button>
-    <button id="referral-btn">Referrals</button>
+    <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
+    <button onclick="handleWithdraw()">Withdraw</button>
 
     <div class="section">
       <h4>Withdraw History</h4>
@@ -172,90 +99,46 @@
     </div>
   </div>
 
-  <!-- Referrals Modal -->
-  <div class="referral-modal" id="referral-modal">
-    <div class="referral-content">
-      <h3>Your Referral Code</h3>
-      <div class="referral-code-box" id="ref-code-box">REF-XXXXXX</div>
-      <button class="copy-btn" id="copy-ref">Copy</button>
-      <br>
-      <button class="close-btn" onclick="closeReferral()">Close</button>
-    </div>
-  </div>
+  <script>
+    let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
+    let miningStarted = false;
+    const usdtPerMs = 1 / 120000;
 
-<script>
-  let balance = 0;
-  let miningStarted = false;
-  let withdrawHistory = [];
-
-  const updateInterval = 100;
-  const incrementPerTick = 0.5 * (updateInterval / 1000);
-
-  function startMining() {
-    if (miningStarted) return;
-    miningStarted = true;
-
-    setInterval(() => {
-      balance += incrementPerTick;
-      updateBalance();
-    }, updateInterval);
-  }
-
-  function updateBalance() {
-    document.getElementById('balance').textContent = balance.toFixed(8);
-  }
-
-  function withdraw() {
-    const min = 500;
-    if (balance < min) {
-      alert(`Minimum withdrawal is ${min} USDT.`);
-      return;
+    function startMining() {
+      if (!miningStarted) {
+        setInterval(() => {
+          balance += usdtPerMs;
+          localStorage.setItem('usdtBalance', balance.toString());
+          updateBalance();
+        }, 1);
+        miningStarted = true;
+      }
     }
-    const amount = balance.toFixed(8);
-    const timestamp = new Date().toLocaleString();
-    withdrawHistory.unshift(`${amount} USDT withdrawn on ${timestamp}`);
-    if (withdrawHistory.length > 10) withdrawHistory.pop();
-    balance = 0;
-    updateBalance();
-    updateWithdrawHistory();
-    alert(`Successfully withdrawn ${amount} USDT!`);
-  }
 
-  function updateWithdrawHistory() {
-    const el = document.getElementById('withdraw-history');
-    el.innerHTML = withdrawHistory.map(h => `<div>${h}</div>`).join('') || 'No withdrawals yet.';
-  }
+    function updateBalance() {
+      document.getElementById('balance').textContent = balance.toFixed(8);
+    }
 
-  function generateReferralCode() {
-    return 'REF-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-  }
+    function updateWithdrawHistory() {
+      const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+      const el = document.getElementById('withdraw-history');
+      el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
+    }
 
-  function openReferral() {
-    const code = generateReferralCode();
-    document.getElementById('ref-code-box').textContent = code;
-    document.getElementById('referral-modal').style.display = 'flex';
-  }
+    function handleWithdraw() {
+      if (balance >= 3000) {
+        window.location.href = "withdraw.html";
+      } else {
+        alert("Minimum withdrawal amount is $3000 USDT.");
+      }
+    }
 
-  function closeReferral() {
-    document.getElementById('referral-modal').style.display = 'none';
-  }
-
-  document.getElementById('withdraw-btn').addEventListener('click', withdraw);
-  document.getElementById('referral-btn').addEventListener('click', openReferral);
-
-  document.getElementById('copy-ref').addEventListener('click', () => {
-    const code = document.getElementById('ref-code-box').textContent;
-    navigator.clipboard.writeText(`Join USDT Miner with my code: ${code}`)
-      .then(() => alert("Copied to clipboard!"))
-      .catch(() => alert("Copy failed"));
-  });
-
-  window.onload = () => {
-    updateBalance();
-    updateWithdrawHistory();
-    startMining();
-  };
-</script>
+    window.onload = () => {
+      updateBalance();
+      updateWithdrawHistory();
+      startMining();
+    };
+  </script>
 
 </body>
 </html>
