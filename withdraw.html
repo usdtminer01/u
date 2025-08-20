@@ -43,10 +43,17 @@
       line-height: 1.6;
     }
 
-    input[type="text"] {
+    .wallet-address {
+      font-weight: bold;
+      color: #facc15;
+      font-size: 0.95em;
+      word-break: break-all;
+    }
+
+    input[type="text"], select {
       width: 100%;
       padding: 10px;
-      margin-top: 15px;
+      margin-top: 10px;
       margin-bottom: 15px;
       border: none;
       border-radius: 8px;
@@ -80,27 +87,35 @@
       border-radius: 8px;
       color: #fff;
     }
-
-    .wallet-address {
-      font-weight: bold;
-      color: #facc15;
-      font-size: 0.95em;
-      word-break: break-all;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Withdraw Request</h2>
+
     <div class="info-box">
-      To process your withdrawal, a gas fee of <strong>$10</strong> is required.  
-      Please send it via <strong>BEP-20 (BNB Smart Chain)</strong> to the wallet address below:
+      To process your withdrawal, a gas fee of <strong>$10</strong> is required.<br />
+      Please send it via <strong>BNB Smart Chain (BEP-20)</strong> to:
       <div class="wallet-address">
         0xc903977a5d443c588cc52e893cdd9e5dc2df4d15
       </div>
     </div>
 
-    <label for="txHash">Paste your transaction hash:</label>
+    <select id="withdrawMethod">
+      <option value="">Select Withdraw Method</option>
+      <option value="USDT (TRC20)">USDT (TRC20)</option>
+      <option value="USDT (BEP20)">USDT (BEP20)</option>
+      <option value="BTC">BTC</option>
+      <option value="ETH">ETH</option>
+      <option value="BNB">BNB</option>
+      <option value="PayPal">PayPal</option>
+      <option value="Payoneer">Payoneer</option>
+      <option value="Easypaisa">Easypaisa</option>
+      <option value="JazzCash">JazzCash</option>
+    </select>
+
+    <input type="text" id="walletAddress" placeholder="Your Wallet or Account" />
+
     <input type="text" id="txHash" placeholder="Transaction Hash (TXID)" />
 
     <button onclick="handlePayment()">I Paid</button>
@@ -112,13 +127,17 @@
 
   <script>
     function handlePayment() {
+      const method = document.getElementById('withdrawMethod').value;
+      const address = document.getElementById('walletAddress').value.trim();
       const hash = document.getElementById('txHash').value.trim();
-      if (!hash || hash.length < 10) {
-        alert("Please enter a valid transaction hash.");
+
+      if (!method || !address || !hash || hash.length < 10) {
+        alert("Please fill in all fields correctly.");
         return;
       }
 
-      // Simulate submission
+      // You can send this data to a backend or email here if needed
+
       document.getElementById('success').style.display = 'block';
     }
   </script>
