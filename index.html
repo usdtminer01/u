@@ -5,111 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>USDT Miner</title>
   <meta name="theme-color" content="#22c55e" />
-  <link rel="icon" href="https://cryptologos.cc/logos/tether-usdt-logo.png?v=032" type="image/png" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
       --yellow: #facc15;
       --dark-bg: #0a0a0a;
     }
-
-    * {
-      box-sizing: border-box;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Poppins', sans-serif;
       background: radial-gradient(circle, var(--dark-bg), #181818);
       color: #fff;
-      margin: 0;
-      padding: 0;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
       min-height: 100vh;
+      padding: 10px;
     }
 
     .container, .startup-screen {
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0,0,0,0.75);
       backdrop-filter: blur(10px);
       border-radius: 15px;
       padding: 20px;
-      box-shadow: 0 0 20px rgba(255, 204, 0, 0.2);
-      width: 90%;
+      width: 100%;
       max-width: 380px;
       text-align: center;
+      box-shadow: 0 0 20px rgba(255,204,0,0.2);
     }
 
-    .hidden {
-      display: none;
-    }
-
-    .usdt-icon {
-      width: 40px;
-      margin-bottom: 10px;
-    }
+    .hidden { display: none; }
 
     h2 {
       color: var(--yellow);
-      margin: 0 0 10px;
+      margin-bottom: 15px;
       font-size: 1.4em;
-    }
-
-    .balance {
-      font-size: 1.5em;
-      margin: 15px 0;
-      color: var(--yellow);
-    }
-
-    button {
-      background-color: var(--yellow);
-      border: none;
-      padding: 12px;
-      margin-top: 10px;
-      border-radius: 8px;
-      color: #000;
-      font-weight: 600;
-      font-size: 1em;
-      cursor: pointer;
-      width: 100%;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #ffcd00;
     }
 
     input[type="text"] {
       width: 100%;
       padding: 10px;
-      border-radius: 8px;
       border: none;
-      margin-top: 10px;
-      font-size: 1em;
+      border-radius: 8px;
       background: #181818;
       color: #fff;
+      margin-bottom: 15px;
+      font-size: 1em;
     }
 
-    .section {
-      margin-top: 20px;
-      text-align: left;
+    button {
+      background-color: var(--yellow);
+      border: none;
+      color: #000;
+      font-weight: 600;
+      padding: 12px;
+      width: 100%;
+      font-size: 1em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover { background-color: #ffcd00; }
+
+    .balance {
+      font-size: 1.5em;
+      color: var(--yellow);
+      margin: 15px 0;
     }
 
+    .section { text-align: left; margin-top: 20px; }
     .section h4 {
+      color: var(--yellow);
+      font-size: 1em;
       margin-bottom: 8px;
       border-bottom: 1px solid #ffffff20;
       padding-bottom: 4px;
-      color: var(--yellow);
-      font-size: 1em;
-    }
-
-    .referral-code {
-      background: #1e293b;
-      padding: 10px;
-      border-radius: 5px;
-      font-size: 0.9em;
-      margin-bottom: 10px;
-      color: #94a3b8;
     }
 
     .history, .referral-list {
@@ -122,19 +93,38 @@
       color: #cbd5e1;
     }
 
-    small {
-      font-size: 0.75em;
-      color: #aaa;
+    .referral-code {
+      background: #1e293b;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+      color: #94a3b8;
     }
 
-    @media screen and (max-width: 400px) {
+    small { font-size: 0.75em; color: #aaa; }
+
+    /* 3D Logo Simulation */
+    .logo-3d {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 10px;
+      background: url('https://cryptologos.cc/logos/tether-usdt-logo.png?v=032') no-repeat center/contain;
+      transform: perspective(200px) rotateX(25deg) rotateY(-15deg);
+      transition: transform 0.6s ease;
+    }
+    .logo-3d:hover {
+      transform: perspective(200px) rotateX(0deg) rotateY(0deg) scale(1.1);
+    }
+
+    @media (max-width: 400px) {
       .balance { font-size: 1.2em; }
       button { font-size: 0.95em; }
+      .logo-3d { width: 60px; height: 60px; }
     }
   </style>
 </head>
 <body>
-
   <!-- Startup Screen -->
   <div class="startup-screen" id="startup-screen">
     <h2>Enter Referral Code</h2>
@@ -144,7 +134,7 @@
 
   <!-- Main App -->
   <div class="container hidden" id="main-app">
-    <img class="usdt-icon" src="https://cryptologos.cc/logos/tether-usdt-logo.png?v=032" alt="USDT Logo" />
+    <div class="logo-3d"></div>
     <h2>USDT Miner</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
     <button onclick="withdraw()">Withdraw</button>
@@ -153,10 +143,9 @@
       <h4>Withdraw History</h4>
       <div class="history" id="withdraw-history">No withdrawals yet.</div>
     </div>
-
     <div class="section">
       <h4>Your Referral Code</h4>
-      <div class="referral-code" id="referral-code">REF-<span id="ref-code"></span></div>
+      <div class="referral-code">REF-<span id="ref-code"></span></div>
       <small>Share your code to earn bonuses!</small>
       <p>Total Referrals: <span id="ref-count">0</span></p>
       <p>Referral Earnings: <span id="ref-earnings">0.00000000</span> USDT</p>
@@ -166,10 +155,11 @@
 
   <script>
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
-    let refEarnings = parseFloat(localStorage.getItem('refEarnings')) || 0;
     let referrals = parseInt(localStorage.getItem('refCount')) || 0;
+    let refEarnings = parseFloat(localStorage.getItem('refEarnings')) || 0;
     let referralUsers = JSON.parse(localStorage.getItem('referralUsers')) || [];
-    const usdtPerFrame = 1 / 6000; // smoother mining rate per animation frame
+
+    const usdtPerFrame = 1 / 6000;
 
     function updateBalance() {
       document.getElementById('balance').textContent = balance.toFixed(8);
@@ -177,17 +167,17 @@
     }
 
     function withdraw() {
-      const minAmount = 500;
-      if (balance >= minAmount) {
-        const amount = balance.toFixed(8);
+      const min = 500;
+      if (balance >= min) {
+        const amt = balance.toFixed(8);
         const ts = new Date().toLocaleString();
-        const history = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
-        history.unshift(`${amount} USDT withdrawn on ${ts}`);
+        let history = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+        history.unshift(`${amt} USDT withdrawn on ${ts}`);
         localStorage.setItem('withdrawHistory', JSON.stringify(history));
         balance = 0;
         updateBalance();
         updateWithdrawHistory();
-        alert(`Withdrawn ${amount} USDT!`);
+        alert(`Withdrawn ${amt} USDT!`);
       } else {
         alert(`Minimum withdrawal is 500 USDT. Your balance: ${balance.toFixed(8)} USDT.`);
       }
@@ -196,82 +186,80 @@
     function updateWithdrawHistory() {
       const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
       const el = document.getElementById('withdraw-history');
-      el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
+      el.innerHTML = hist.length
+        ? hist.map(h => `<div>${h}</div>`).join('')
+        : 'No withdrawals yet.';
     }
 
     function generateReferralCode() {
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-      localStorage.setItem("referralCode", code);
+      localStorage.setItem('referralCode', code);
       return code;
     }
 
-    function updateReferralList() {
-      const list = referralUsers.length
-        ? referralUsers.map(code => `<div>Referred via: ${code}</div>`).join('')
+    function updateReferralUI() {
+      document.getElementById('ref-count').textContent = referrals;
+      document.getElementById('ref-earnings').textContent = refEarnings.toFixed(8);
+      document.getElementById('referral-list').innerHTML = referralUsers.length
+        ? referralUsers.map(c => `<div>Referred via: ${c}</div>`).join('')
         : 'No referrals yet.';
-      document.getElementById('referral-list').innerHTML = list;
     }
 
     function startMining() {
-      function mine() {
+      function tick() {
         balance += usdtPerFrame;
         updateBalance();
-        requestAnimationFrame(mine);
+        requestAnimationFrame(tick);
       }
-      requestAnimationFrame(mine);
+      requestAnimationFrame(tick);
     }
 
-    document.getElementById("startButton").addEventListener("click", () => {
-      const inputCode = document.getElementById("referralInput").value.trim();
-      const myCode = localStorage.getItem("referralCode") || generateReferralCode();
-      document.getElementById("ref-code").textContent = myCode;
+    document.getElementById('startButton').addEventListener('click', () => {
+      const input = document.getElementById('referralInput').value.trim();
+      const myCode = localStorage.getItem('referralCode') || generateReferralCode();
+      document.getElementById('ref-code').textContent = myCode;
 
-      if (!localStorage.getItem("hasStarted")) {
-        localStorage.setItem("hasStarted", "true");
-
-        if (inputCode && inputCode !== myCode) {
+      if (!localStorage.getItem('hasStarted')) {
+        localStorage.setItem('hasStarted', 'true');
+        if (input && input !== myCode) {
           balance += 10;
-          localStorage.setItem("joinedVia", inputCode);
-          const key = `referral_${inputCode}`;
-          const previous = parseInt(localStorage.getItem(key) || '0');
-          localStorage.setItem(key, previous + 1);
-          referralUsers.push(inputCode);
+          localStorage.setItem('joinedVia', input);
+          const key = `referral_${input}`;
+          const prev = parseInt(localStorage.getItem(key) || '0');
+          localStorage.setItem(key, prev + 1);
+          referralUsers.push(input);
           localStorage.setItem('referralUsers', JSON.stringify(referralUsers));
         }
       }
 
       referrals = parseInt(localStorage.getItem(`referral_${myCode}`) || '0');
       refEarnings = referrals * 5;
-      localStorage.setItem('refEarnings', refEarnings.toString());
       localStorage.setItem('refCount', referrals.toString());
+      localStorage.setItem('refEarnings', refEarnings.toString());
 
-      document.getElementById("ref-count").textContent = referrals;
-      document.getElementById("ref-earnings").textContent = refEarnings.toFixed(8);
-      document.getElementById("balance").textContent = balance.toFixed(8);
-
-      document.getElementById("startup-screen").classList.add("hidden");
-      document.getElementById("main-app").classList.remove("hidden");
-
+      updateReferralUI();
       updateWithdrawHistory();
-      updateReferralList();
+      updateBalance();
+
+      document.getElementById('startup-screen').classList.add('hidden');
+      document.getElementById('main-app').classList.remove('hidden');
       startMining();
     });
 
     window.onload = () => {
-      if (localStorage.getItem("hasStarted")) {
-        const myCode = localStorage.getItem("referralCode") || generateReferralCode();
-        document.getElementById("ref-code").textContent = myCode;
-        document.getElementById("ref-count").textContent = localStorage.getItem('refCount') || 0;
-        document.getElementById("ref-earnings").textContent = parseFloat(localStorage.getItem('refEarnings') || 0).toFixed(8);
-        document.getElementById("balance").textContent = balance.toFixed(8);
-        document.getElementById("startup-screen").classList.add("hidden");
-        document.getElementById("main-app").classList.remove("hidden");
+      if (localStorage.getItem('hasStarted')) {
+        const myCode = localStorage.getItem('referralCode') || generateReferralCode();
+        document.getElementById('ref-code').textContent = myCode;
+        referrals = parseInt(localStorage.getItem('refCount')) || 0;
+        refEarnings = parseFloat(localStorage.getItem('refEarnings')) || 0;
+        updateReferralUI();
         updateWithdrawHistory();
-        updateReferralList();
+        updateBalance();
+        document.getElementById('startup-screen').classList.add('hidden');
+        document.getElementById('main-app').classList.remove('hidden');
         startMining();
       }
     };
   </script>
-
 </body>
 </html>
