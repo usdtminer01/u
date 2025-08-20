@@ -30,10 +30,120 @@
     }
 
     .usdt-icon {
-      width: 50px;
+      width: 60px;
       margin-bottom: 15px;
     }
 
+    h2 {
+      color: #facc15;
+      margin-bottom: 10px;
+    }
+
+    .balance {
+      font-size: 2em;
+      margin: 20px 0;
+      color: #facc15;
+    }
+
+    button {
+      background-color: #facc15;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 10px;
+      border-radius: 8px;
+      color: #000;
+      font-size: 1em;
+      cursor: pointer;
+      width: 100%;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ffcd00;
+    }
+
+    .section {
+      margin-top: 25px;
+      text-align: left;
+    }
+
+    .section h4 {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ffffff;
+      padding-bottom: 5px;
+      color: #facc15;
+    }
+
+    .history {
+      background: #0f172a;
+      padding: 10px;
+      border-radius: 5px;
+      max-height: 120px;
+      overflow-y: auto;
+      font-size: 0.9em;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Embedded USDT Logo using Base64 -->
+    <img class="usdt-icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsSAAALEgHS3X78AAAB4klEQVR4nO2YzU7DIAyG9Q+YQfaAwvN4jzN4XxFCkSde6o8mbPlqqXgAtivAcMJAAAAAAAAACCIr7y5bYO0L5UZrtrcgbALHpnk7ZzY1aZKy6gyVx21u42zkkEGNyyIRm9ybIWGIR8nHyL+PYk+N3gHv8tOjVGtbkZIGMTax/1OHvdJLAV+U6MS4WXHAg/jOTyASgrM4jAeCj+kJjFfQo0HPBzmvAAaF9U2MiOA+mh6rR5jBgtc6wlBpM4sITDJ3CbFGYbaRQ0OYf9vM0nvK0hssR3QAZ4RxuNTNjYj7JY+uMihOEzmbEF9VtsESKPTbcOHkcm1k+oZnsM0mVp4MZfKRo4Y4cAXmQyn4D15xzDnMw+XpYZEPZJ39Afcm5hbx7DdzHTDlfRgGzK/k5vw8r3ih5ME+WwwFGkIzheTCxwM7n0tVaUqq16xfceOP9oLRjA2jbD7Rj8hvfYsyedH/4ZQm1yED/3jsmMS06e+jzI2MibMQ6x+oEFudXH8EAAAAASUVORK5CYII=" alt="USDT Logo">
+    
+    <h2>USDT Miner</h2>
+    <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
+    <button onclick="handleWithdraw()">Withdraw</button>
+
+    <div class="section">
+      <h4>Withdraw History</h4>
+      <div class="history" id="withdraw-history">No withdrawals yet.</div>
+    </div>
+  </div>
+
+  <script>
+    let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
+    let miningStarted = false;
+    const usdtPerMs = 1 / 120000;
+
+    function startMining() {
+      if (!miningStarted) {
+        setInterval(() => {
+          balance += usdtPerMs;
+          localStorage.setItem('usdtBalance', balance.toString());
+          updateBalance();
+        }, 10); // smoother + less CPU intensive
+        miningStarted = true;
+      }
+    }
+
+    function updateBalance() {
+      document.getElementById('balance').textContent = balance.toFixed(8);
+    }
+
+    function updateWithdrawHistory() {
+      const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+      const el = document.getElementById('withdraw-history');
+      el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
+    }
+
+    function handleWithdraw() {
+      if (balance >= 3000) {
+        window.location.href = "withdraw.html";
+      } else {
+        alert("🚫 Minimum withdrawal amount is $3000 USDT.");
+      }
+    }
+
+    window.onload = () => {
+      updateBalance();
+      updateWithdrawHistory();
+      startMining();
+    };
+  </script>
+
+</body>
+</html>
     h2 {
       color: #facc15;
       margin-bottom: 10px;
