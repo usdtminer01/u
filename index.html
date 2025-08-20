@@ -6,16 +6,17 @@
   <title>USDT Miner</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"/>
   <style>
+    :root { --green: #26A17B; --yellow: #facc15; --dark: #181818; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle, #0a0a0a, #181818);
+      background: radial-gradient(circle, #0a0a0a, var(--dark));
       color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 10px;
-      margin: 0;
     }
     .container, .startup-screen {
       background: rgba(0,0,0,0.75);
@@ -28,13 +29,11 @@
       box-shadow: 0 0 20px rgba(255,204,0,0.2);
     }
     .hidden { display: none; }
-    h2 { color: #facc15; margin-bottom: 15px; }
-    input {
-      width: 100%; padding: 10px; border: none; border-radius:8px;
-      background:#181818; color:#fff; margin-bottom:15px; font-size:1em;
-    }
+    h2 { color: var(--yellow); margin-bottom: 15px; }
+    input { width: 100%; padding: 10px; border: none; border-radius:8px;
+            background:#181818; color:#fff; margin-bottom:15px; font-size:1em; }
     button {
-      background-color: #facc15;
+      background-color: var(--yellow);
       border: none;
       color: #000;
       font-weight: 600;
@@ -52,7 +51,7 @@
     }
     .balance {
       font-size: 1.5em;
-      color: #facc15;
+      color: var(--yellow);
       margin: 15px 0;
     }
     .history, .referral-list {
@@ -65,36 +64,39 @@
       font-size:0.9em; margin-bottom:10px; color:#94a3b8; text-align:left;
     }
     small { font-size:0.75em; color:#aaa; }
+    @media (max-width: 400px) {
+      .balance { font-size:1.2em; }
+      button { font-size:0.95em; }
+      .logo { width:60px; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Startup Screen -->
   <div class="startup-screen" id="startup-screen">
     <h2>Enter Referral Code</h2>
     <input type="text" id="referralInput" placeholder="Enter code (optional)"/>
     <button id="startButton">Let's Earn</button>
   </div>
 
-  <!-- Main App -->
   <div class="container hidden" id="main-app">
-    <!-- Inline SVG Logo -->
     <div class="logo">
-      <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="200" cy="200" r="200" fill="#26A17B"/>
-        <text x="50%" y="55%" text-anchor="middle" font-size="140" font-family="Arial" fill="white">$</text>
+      <!-- Inline USDT Logo -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+        <circle cx="64" cy="64" r="64" fill="var(--green)"/>
+        <path d="M64 24 L64 104 M44 64 H84" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
       </svg>
     </div>
     <h2>USDT Miner</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
     <button onclick="withdraw()">Withdraw</button>
 
-    <div class="history-section">
+    <div>
       <h4>Withdraw History</h4>
       <div class="history" id="withdraw-history">No withdrawals yet.</div>
     </div>
 
-    <div class="referral-section">
+    <div>
       <h4>Your Referral Code</h4>
       <div class="referral-code">REF-<span id="ref-code"></span></div>
       <small>Share your code to earn bonuses!</small>
@@ -111,10 +113,10 @@
     let referralUsers = JSON.parse(localStorage.getItem('referralUsers')) || [];
     const usdtPerFrame = 1 / 6000;
 
-    function updateBalance() {
+    const updateBalance = () => {
       document.getElementById('balance').textContent = balance.toFixed(8);
       localStorage.setItem('usdtBalance', balance.toString());
-    }
+    };
 
     function withdraw() {
       if (balance >= 500) {
@@ -132,25 +134,25 @@
       }
     }
 
-    function updateWithdrawHistory() {
+    const updateWithdrawHistory = () => {
       const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
       document.getElementById('withdraw-history').innerHTML =
         hist.length ? hist.map(h => `<div>${h}</div>`).join('') : 'No withdrawals yet.';
-    }
+    };
 
-    function generateReferralCode() {
+    const generateReferralCode = () => {
       const code = Math.random().toString(36).substring(2, 8).toUpperCase();
       localStorage.setItem('referralCode', code);
       return code;
-    }
+    };
 
-    function updateReferralUI() {
+    const updateReferralUI = () => {
       document.getElementById('ref-count').textContent = referrals;
       document.getElementById('ref-earnings').textContent = refEarnings.toFixed(8);
       document.getElementById('referral-list').innerHTML = referralUsers.length
         ? referralUsers.map(c => `<div>Referred via: ${c}</div>`).join('')
         : 'No referrals yet.';
-    }
+    };
 
     function startMining() {
       function tick() {
@@ -207,3 +209,4 @@
   </script>
 </body>
 </html>
+
