@@ -84,7 +84,7 @@
       color: #cbd5e1;
     }
 
-    /* WhatsApp button style */
+    /* WhatsApp button */
     .whatsapp-btn {
       display: flex;
       align-items: center;
@@ -115,7 +115,7 @@
 <body>
 
   <div class="container">
-    <h2>EARN USDT </h2>
+    <h2>USDT Miner</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
     <button onclick="handleWithdraw()">Withdraw</button>
 
@@ -124,7 +124,6 @@
       <div class="history" id="withdraw-history">No withdrawals yet.</div>
     </div>
 
-    <!-- WhatsApp Contact Button -->
     <a href="https://wa.me/16723004545" target="_blank" class="whatsapp-btn">
       <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
       Contact on WhatsApp
@@ -134,21 +133,10 @@
   <script>
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
     let miningStarted = false;
-    const usdtPerMs = 1 / 120000;
-
-    function startMining() {
-      if (!miningStarted) {
-        setInterval(() => {
-          balance += usdtPerMs;
-          localStorage.setItem('usdtBalance', balance.toString());
-          updateBalance();
-        }, 10);
-        miningStarted = true;
-      }
-    }
+    const balanceDisplay = document.getElementById('balance');
 
     function updateBalance() {
-      document.getElementById('balance').textContent = balance.toFixed(8); // ⬅️ Full 8 decimals
+      balanceDisplay.textContent = balance.toFixed(8);
     }
 
     function updateWithdrawHistory() {
@@ -162,6 +150,26 @@
         window.location.href = "withdraw.html";
       } else {
         alert("🚫 Minimum withdrawal amount is $3000 USDT.");
+      }
+    }
+
+    // Start mining after page load
+    function startMining() {
+      if (!miningStarted) {
+        miningStarted = true;
+
+        // Animate smooth mining (for visuals only)
+        setInterval(() => {
+          localStorage.setItem('usdtBalance', balance.toString());
+          updateBalance();
+        }, 500);
+
+        // Add 1 USDT every 2 minutes (120000 ms)
+        setInterval(() => {
+          balance += 1;
+          localStorage.setItem('usdtBalance', balance.toString());
+          updateBalance();
+        }, 120000);
       }
     }
 
