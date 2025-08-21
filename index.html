@@ -3,98 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login to USDT Wallet</title>
+  <title>Signup - USDT Wallet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
-      margin: 0;
       font-family: 'Poppins', sans-serif;
+      background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
+      background-size: 400% 400%;
+      animation: gradient 20s ease infinite;
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: linear-gradient(135deg, #003d2a, #00513b, #008b64);
-      background-size: 400% 400%;
-      animation: animate 15s ease infinite;
-      color: white;
+      margin: 0;
     }
-
-    @keyframes animate {
+    @keyframes gradient {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-
-    .form-box {
-      background: rgba(0, 0, 0, 0.7);
+    .container {
+      background: rgba(0, 0, 0, 0.6);
       padding: 30px 25px;
       border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0, 255, 128, 0.2);
       width: 300px;
-    }
-
-    h2 {
+      box-shadow: 0 0 20px rgba(0,255,128,0.3);
       text-align: center;
+    }
+    h2 {
       margin-bottom: 20px;
       color: #00e99a;
     }
-
     input {
       width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
+      margin: 10px 0;
       border-radius: 8px;
       border: none;
-      font-size: 1em;
+      font-size: 1rem;
     }
-
     button {
       width: 100%;
       padding: 10px;
-      font-size: 1em;
-      background-color: #00e99a;
+      background: #00e99a;
       border: none;
       border-radius: 8px;
-      color: #000;
       font-weight: bold;
       cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #00ffb3;
+      color: black;
+      font-size: 1.1rem;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-
-  <div class="form-box">
-    <h2>Welcome</h2>
+  <div class="container">
+    <h2>Create Account</h2>
     <input type="text" id="username" placeholder="Enter your username" required />
     <input type="text" id="referral" placeholder="Referral code (optional)" />
-    <button onclick="handleLogin()">Continue</button>
+    <button onclick="handleSignup()">Start</button>
   </div>
 
   <script>
-    function handleLogin() {
+    function handleSignup() {
       const username = document.getElementById('username').value.trim();
       const referral = document.getElementById('referral').value.trim();
-      const storedUser = localStorage.getItem('usdt_user');
 
       if (!username) {
-        alert("Please enter your username.");
+        alert('Please enter a username.');
         return;
       }
 
-      if (!storedUser) {
-        localStorage.setItem('usdt_user', username);
-        if (referral && referral !== username) {
-          localStorage.setItem('usdt_referral_used', referral);
-          localStorage.setItem('usdtBalance', '200'); // bonus to new user
-          localStorage.setItem('usdt_referred', 'yes'); // only one time
-        }
+      // Save username & referral in localStorage
+      localStorage.setItem('usdt_user', username);
+      if (referral) {
+        localStorage.setItem('usdt_referral_used', referral);
+        localStorage.removeItem('usdt_referral_rewarded'); // reset rewarded flag for new referrals
+      } else {
+        localStorage.removeItem('usdt_referral_used');
+        localStorage.removeItem('usdt_referral_rewarded');
       }
 
+      // Redirect to dashboard
       window.location.href = 'dashboard.html';
     }
+
+    // Optional: if user already logged in, skip signup
+    window.onload = () => {
+      if (localStorage.getItem('usdt_user')) {
+        window.location.href = 'dashboard.html';
+      }
+    };
   </script>
 </body>
 </html>
