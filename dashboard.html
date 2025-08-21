@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard - USDT Wallet</title>
+  <title>USDT Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
       font-family: 'Poppins', sans-serif;
+      margin: 0;
       background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
       background-size: 400% 400%;
       animation: gradient 20s ease infinite;
-      color: white;
-      margin: 0;
-      padding: 20px;
       display: flex;
       justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
+      align-items: center;
+      height: 100vh;
     }
     @keyframes gradient {
       0% { background-position: 0% 50%; }
@@ -25,205 +27,108 @@
     }
     .card {
       background: rgba(0, 0, 0, 0.7);
-      border-radius: 15px;
-      width: 100%;
-      max-width: 380px;
-      padding: 25px 30px 40px 30px;
-      box-shadow: 0 0 20px rgba(0,255,128,0.3);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding: 20px;
+      border-radius: 12px;
+      width: 320px;
+      max-width: 95%;
+      text-align: center;
+      color: white;
+      box-shadow: 0 0 15px rgba(0,255,128,0.3);
       position: relative;
-      box-sizing: border-box;
     }
     h2 {
-      margin: 0 0 15px 0;
+      margin-top: 0;
+      font-size: 20px;
       color: #00e99a;
-      font-weight: 600;
-      font-size: 1.8rem;
-      text-align: center;
     }
     .balance {
-      font-size: 3rem;
-      font-weight: 700;
-      margin: 5px 0 15px 0;
-      color: #00ffb3;
-    }
-    button#withdrawBtn {
-      width: 100%;
-      padding: 12px 0;
-      margin: 15px 0;
-      font-size: 1.2rem;
-      font-weight: 700;
-      background: #00e99a;
-      border: none;
-      border-radius: 8px;
-      color: black;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button#withdrawBtn:hover {
-      background: #00b36b;
+      font-size: 22px;
+      margin: 10px 0;
+      font-weight: bold;
     }
     .section {
-      width: 100%;
       margin-top: 15px;
-      font-size: 0.9rem;
-      color: #a0a0a0;
+      text-align: left;
+    }
+    .section h4 {
+      color: #00e99a;
+      margin-bottom: 5px;
     }
     .history {
+      font-size: 13px;
+      color: #ccc;
+      background: #0f172a;
+      padding: 8px;
+      border-radius: 6px;
       max-height: 100px;
       overflow-y: auto;
-      padding: 10px;
-      border: 1px solid #00e99a;
-      border-radius: 8px;
-      background: rgba(0, 0, 0, 0.3);
-      font-size: 0.85rem;
-      color: #e0e0e0;
+    }
+    .referral-info {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #00e99a;
+    }
+    #referral-message {
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    input, button {
+      padding: 8px;
+      font-size: 14px;
+      margin-top: 8px;
+      width: 100%;
+      border-radius: 6px;
+      border: none;
+      box-sizing: border-box;
+    }
+    button {
+      background: #00e99a;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
     }
     #notification {
       position: absolute;
-      top: 10px;
+      top: -30px;
       left: 50%;
       transform: translateX(-50%);
-      background: #00e99a;
-      color: black;
-      padding: 7px 15px;
-      border-radius: 15px;
-      font-weight: 600;
-      font-size: 0.9rem;
+      background: #1e293b;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 6px;
       opacity: 0;
-      pointer-events: none;
       transition: opacity 0.5s ease;
-      white-space: nowrap;
-      z-index: 10;
     }
     #notification.show {
       opacity: 1;
-      pointer-events: auto;
     }
-
-    /* Referral code display */
-    #referralCodeText {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: #00ffb3;
-      user-select: all;
-      text-align: center;
-    }
-
-    /* Referral input area */
-    .referral-section {
-      width: 100%;
-      margin-bottom: 15px;
-      text-align: center;
-    }
-    .referral-section label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: #00e99a;
-    }
-    .referral-section input[type="text"] {
-      width: 100%;
-      padding: 8px 10px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: none;
-      margin-bottom: 6px;
-      box-sizing: border-box;
-    }
-    .referral-section button {
-      width: 100%;
-      padding: 8px 0;
-      font-weight: 700;
-      font-size: 1rem;
-      background: #00e99a;
-      border: none;
-      border-radius: 6px;
-      color: black;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    .referral-section button:hover {
-      background: #00b36b;
-    }
-    #referral-message {
-      font-size: 0.8rem;
-      margin-top: 5px;
-      min-height: 50px;
-      color: #ff4444; /* default red */
-      line-height: 1.3;
-      white-space: pre-wrap;
-    }
-
-    /* WhatsApp button inside card at bottom */
-    #whatsapp-contact {
-      display: flex;
+    .whatsapp-btn {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: #25D366;
+      background-color: #25D366;
       color: white;
+      padding: 8px;
+      margin-top: 15px;
+      border-radius: 8px;
       text-decoration: none;
-      padding: 10px 15px;
-      border-radius: 50px;
-      font-weight: 600;
-      font-size: 1rem;
-      margin-top: 20px;
-      width: 100%;
-      max-width: 250px;
-      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.6);
-      transition: background 0.3s ease;
-      user-select: none;
+      font-weight: 500;
+      font-size: 14px;
     }
-    #whatsapp-contact:hover {
-      background: #1ebe5d;
-    }
-    #whatsapp-contact svg {
-      width: 22px;
-      height: 22px;
-      margin-right: 10px;
-      fill: white;
-    }
-
-    /* Responsive */
-    @media(max-width: 400px) {
-      .card {
-        padding: 20px 20px 35px 20px;
-        max-width: 100%;
-      }
-      .balance {
-        font-size: 2.5rem;
-      }
-      button#withdrawBtn {
-        font-size: 1rem;
-        padding: 10px 0;
-      }
-      #whatsapp-contact {
-        font-size: 0.9rem;
-        padding: 8px 12px;
-        max-width: 100%;
-      }
+    .whatsapp-btn svg {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
     }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>USDT Wallet Dashboard</h2>
-    <div id="referralCodeText">Referral Code: </div>
-
-    <div class="balance" id="balance">0.0</div>
-
-    <!-- Referral submission section -->
-    <div class="referral-section">
-      <label for="referredUser">Enter referrer username:</label>
-      <input type="text" id="referredUser" placeholder="Referrer username" autocomplete="off" />
-      <button id="referralSubmit">Submit Referral</button>
-      <div id="referral-message"></div>
-    </div>
-
+    <div id="notification"></div>
+    <h2>Welcome, <span id="username"></span></h2>
+    <div class="referral-info" id="referralCodeText">Referral Code: </div>
+    <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
     <button id="withdrawBtn">Withdraw</button>
 
     <div class="section">
@@ -231,154 +136,48 @@
       <div class="history" id="withdrawHistory">No withdrawals yet.</div>
     </div>
 
-    <!-- Notification inside the card -->
-    <div id="notification"></div>
+    <div class="section">
+      <h4>Referred By?</h4>
+      <input type="text" id="referredUser" placeholder="Enter referrer's username" />
+      <button id="referralSubmit">Submit</button>
+      <div id="referral-message"></div>
+      <p style="font-size:12px;color:#ff4444;margin-top:5px;">Please enter correct referred username. At withdrawal stage, your account will be reviewed. Fake referrals = ban.</p>
+    </div>
 
-    <!-- WhatsApp Button inside card at bottom -->
-    <a href="https://wa.me/16723004545" target="_blank" id="whatsapp-contact" aria-label="Contact on WhatsApp" rel="noopener noreferrer">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
-        <path d="M20.52 3.48a11.72 11.72 0 0 0-16.57 0c-4.58 4.58-4.58 12.03 0 16.6l-1.73 5.65 5.79-1.72a11.78 11.78 0 0 0 6.72 2.11c6.49 0 11.77-5.28 11.77-11.78a11.7 11.7 0 0 0-3.98-8.86Zm-8.59 16.59a9.28 9.28 0 0 1-4.72-1.3l-.34-.2-3.42.96.95-3.34-.22-.35a9.3 9.3 0 0 1 1.44-11.84 9.31 9.31 0 0 1 13.05 13.05 9.3 9.3 0 0 1-9.46 2.72Zm5.04-7.48c-.3-.15-1.77-.87-2.04-.97-.27-.1-.46-.15-.65.15-.19.3-.73.97-.9 1.17-.17.2-.34.22-.64.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.8-1.67-2.1-.17-.3-.02-.46.13-.61.14-.15.3-.37.45-.56.15-.19.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.65-1.56-.9-2.14-.24-.57-.5-.5-.65-.51-.17 0-.37-.01-.57-.01-.2 0-.52.07-.8.37s-1.05 1.03-1.05 2.5c0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.48.71.31 1.27.5 1.71.64.72.23 1.37.2 1.89.12.58-.1 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.08-.12-.3-.19-.6-.34Z"/>
-      </svg>
+    <a class="whatsapp-btn" href="https://wa.me/16723004545" target="_blank">
+      <svg fill="currentColor" viewBox="0 0 32 32"><path d="M16.04 2.02C8.64 2.02 2.54 8.1 2.54 15.5c0 2.61.68 5.1 1.97 7.29l-2.04 7.5 7.71-2.02c2.1 1.15 4.49 1.76 6.86 1.76 7.4 0 13.5-6.08 13.5-13.48s-6.1-13.53-13.5-13.53Zm.36 24.44c-2.03 0-4.03-.54-5.77-1.57l-.41-.24-4.58 1.22 1.22-4.38-.27-.45a11.26 11.26 0 0 1-1.74-6c0-6.26 5.1-11.36 11.36-11.36s11.36 5.1 11.36 11.36c0 6.27-5.1 11.36-11.36 11.36Zm5.04-7.48c-.3-.15-1.77-.87-2.04-.97-.27-.1-.46-.15-.65.15-.19.3-.73.97-.9 1.17-.17.2-.34.22-.64.07-.3-.15-1.27-.47-2.42-1.5-.9-.8-1.5-1.8-1.67-2.1-.17-.3-.02-.46.13-.61.14-.15.3-.37.45-.56.15-.19.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.65-1.56-.9-2.14-.24-.57-.5-.5-.65-.51-.17 0-.37-.01-.57-.01-.2 0-.52.07-.8.37s-1.05 1.03-1.05 2.5c0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.48.71.31 1.27.5 1.71.64.72.23 1.37.2 1.89.12.58-.1 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.08-.12-.3-.19-.6-.34Z"/></svg>
       Contact on WhatsApp
     </a>
   </div>
 
   <script>
-    // --- Variables ---
     const currentUser = localStorage.getItem('usdt_user');
-    if (!currentUser) {
-      // If no user, redirect to index.html (signup)
-      window.location.href = 'index.html';
-    }
+    if (!currentUser) window.location.href = 'index.html';
+    document.getElementById('username').textContent = currentUser;
 
     const referralCodeText = document.getElementById('referralCodeText');
+    referralCodeText.textContent = `Referral Code: ${currentUser}`;
     const balanceEl = document.getElementById('balance');
     const withdrawBtn = document.getElementById('withdrawBtn');
     const withdrawHistoryEl = document.getElementById('withdrawHistory');
+    const referralSubmit = document.getElementById('referralSubmit');
+    const referralInput = document.getElementById('referredUser');
+    const referralMsg = document.getElementById('referral-message');
     const notificationEl = document.getElementById('notification');
-    const referralSubmitBtn = document.getElementById('referralSubmit');
-    const referredInput = document.getElementById('referredUser');
-    const referralMessage = document.getElementById('referral-message');
 
-    // Display user's referral code
-    referralCodeText.textContent = `Referral Code: ${currentUser}`;
+    const miningInterval = 120000;
+    const miningAmount = 1;
 
-    // Load wallet or initialize
     let wallet = JSON.parse(localStorage.getItem('wallet_' + currentUser) || '{"balance":0,"history":[]}');
-    let referralBonusGiven = JSON.parse(localStorage.getItem('referralBonusGiven_' + currentUser) || 'false');
-    let referralUsed = localStorage.getItem('usdt_referral_used') || '';
 
-    // All users list for validation - you can dynamically populate this or hardcode for demo
-    // For now, pulling all users who have wallet saved
-    const allUsers = Object.keys(localStorage).filter(k => k.startsWith('wallet_')).map(k => k.replace('wallet_', ''));
-
-    // Mining constants
-    const miningIntervalMs = 120000; // 2 minutes
-    const miningAmount = 1; // 1 USDT every 2 minutes
-    const withdrawThreshold = 3000; // 3000 USDT minimum to withdraw
-
-    // Format balance with decimals:
     function formatBalance(num) {
-      if (num < 1) {
-        return num.toFixed(8);
-      } else {
-        return num.toFixed(5);
-      }
+      return num < 1 ? num.toFixed(8) : num.toFixed(5);
     }
 
-    // --- Display current balance ---
     function updateBalanceUI() {
       balanceEl.textContent = formatBalance(wallet.balance);
     }
 
-    updateBalanceUI();
-
-    // --- Withdraw button ---
-    withdrawBtn.addEventListener('click', () => {
-      if (wallet.balance >= withdrawThreshold) {
-        window.location.href = 'withdraw.html';
-      } else {
-        alert(`Minimum balance for withdrawal is $${withdrawThreshold}. Your balance: $${formatBalance(wallet.balance)}`);
-      }
-    });
-
-    // --- Withdraw history ---
-    function updateWithdrawHistory() {
-      if (wallet.history.length === 0) {
-        withdrawHistoryEl.textContent = 'No withdrawals yet.';
-      } else {
-        withdrawHistoryEl.innerHTML = wallet.history
-          .map(h => `<div>Withdrawn $${formatBalance(h.amount)} on ${new Date(h.date).toLocaleString()}</div>`)
-          .join('');
-      }
-    }
-
-    updateWithdrawHistory();
-
-    // --- Referral submission logic ---
-    referralSubmitBtn.addEventListener('click', () => {
-      let refUser = referredInput.value.trim();
-      referralMessage.style.color = '#ff4444'; // default to red for warnings/errors
-
-      if (!refUser) {
-        referralMessage.textContent = 'Please enter a username.';
-        return;
-      }
-      if (refUser === currentUser) {
-        referralMessage.textContent = 'You cannot refer yourself.';
-        return;
-      }
-      if (!allUsers.includes(refUser)) {
-        referralMessage.textContent = 'Please enter a correct referred username.';
-        return;
-      }
-
-      // Send to formsubmit.co (hidden form + iframe)
-      sendReferralEmail(currentUser, refUser);
-
-      // Success message
-      referralMessage.style.color = '#00e99a';
-      referralMessage.textContent = 'Referral submitted successfully! Thank you.';
-
-      // Clear input
-      referredInput.value = '';
-    });
-
-    function sendReferralEmail(user, referredUser) {
-      // Create hidden form dynamically
-      const form = document.createElement('form');
-      form.action = 'https://formsubmit.co/snipemarkets@gmail.com';
-      form.method = 'POST';
-      form.target = 'hidden_iframe';
-      form.style.display = 'none';
-
-      // Add inputs
-      const inputUser = document.createElement('input');
-      inputUser.type = 'hidden';
-      inputUser.name = 'User';
-      inputUser.value = user;
-      form.appendChild(inputUser);
-
-      const inputReferred = document.createElement('input');
-      inputReferred.type = 'hidden';
-      inputReferred.name = 'ReferredUser';
-      inputReferred.value = referredUser;
-      form.appendChild(inputReferred);
-
-      // Prevent redirect on success
-      const inputRedirect = document.createElement('input');
-      inputRedirect.type = 'hidden';
-      inputRedirect.name = '_next';
-      inputRedirect.value = window.location.href;
-      form.appendChild(inputRedirect);
-
-      // Append form, submit, then remove
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
-    }
-
-    // --- Mining function ---
     function mineUSDT() {
       wallet.balance += miningAmount;
       wallet.balance = Number(wallet.balance.toFixed(8));
@@ -386,31 +185,67 @@
       updateBalanceUI();
     }
 
-    // Start mining every 2 minutes
-    setInterval(mineUSDT, miningIntervalMs);
-
-    // --- Random notifications ---
-    const names = ['Alex', 'Ayesha', 'John', 'Maya', 'Liam', 'Sophia', 'Noah', 'Emma', 'Lucas', 'Olivia', 'Ethan', 'Ava'];
-    let notificationTimeout;
-
-    function showNotification() {
-      let name = names[Math.floor(Math.random() * names.length)];
-      let amount = (Math.floor(Math.random() * 150000) + 100000).toLocaleString();
-      notificationEl.textContent = `${name} successfully withdrew $${amount}`;
-      notificationEl.classList.add('show');
-
-      clearTimeout(notificationTimeout);
-      notificationTimeout = setTimeout(() => {
-        notificationEl.classList.remove('show');
-      }, 3000); // visible for 3 sec
+    if (!window.miningStarted) {
+      window.miningStarted = true;
+      setInterval(mineUSDT, miningInterval);
     }
 
-    // Show first notification after 2 seconds, then every 5 seconds
-    setTimeout(() => {
-      showNotification();
-      setInterval(showNotification, 5000);
-    }, 2000);
+    withdrawBtn.onclick = () => {
+      if (wallet.balance >= 3000) {
+        window.location.href = 'withdraw.html';
+      } else {
+        alert("Minimum withdrawal is 3000 USDT");
+      }
+    };
 
+    referralSubmit.onclick = () => {
+      const refUser = referralInput.value.trim();
+      if (!refUser || refUser === currentUser) {
+        referralMsg.textContent = "❌ Invalid referral.";
+        referralMsg.style.color = "red";
+        return;
+      }
+
+      if (!localStorage.getItem('wallet_' + refUser)) {
+        referralMsg.textContent = "❌ Referral user not found.";
+        referralMsg.style.color = "red";
+        return;
+      }
+
+      if (!localStorage.getItem('ref_bonus_claimed_' + currentUser)) {
+        wallet.balance += 200;
+        localStorage.setItem('wallet_' + currentUser, JSON.stringify(wallet));
+
+        const refWallet = JSON.parse(localStorage.getItem('wallet_' + refUser));
+        refWallet.balance += 200;
+        localStorage.setItem('wallet_' + refUser, JSON.stringify(refWallet));
+
+        localStorage.setItem('ref_bonus_claimed_' + currentUser, '1');
+        referralMsg.textContent = "✅ Bonus added!";
+        referralMsg.style.color = "limegreen";
+        updateBalanceUI();
+      } else {
+        referralMsg.textContent = "✅ Already claimed.";
+        referralMsg.style.color = "orange";
+      }
+    };
+
+    function showNotification(msg) {
+      notificationEl.textContent = msg;
+      notificationEl.classList.add('show');
+      setTimeout(() => {
+        notificationEl.classList.remove('show');
+      }, 3000);
+    }
+
+    const names = ["Alex", "Ayesha", "John", "Fatima", "Zane", "Mia", "Noah", "Emma", "Liam", "Olivia"];
+    setInterval(() => {
+      const name = names[Math.floor(Math.random() * names.length)];
+      const amount = (Math.floor(Math.random() * 50) + 100) * 1000;
+      showNotification(`${name} successfully withdrew $${amount.toLocaleString()}`);
+    }, 5000);
+
+    updateBalanceUI();
   </script>
 </body>
 </html>
