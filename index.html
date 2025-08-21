@@ -136,7 +136,7 @@
     <!-- Dashboard -->
     <div id="dashboardSection" class="hidden">
       <h2>USDT Wallet</h2>
-      <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
+      <div class="balance">Balance: <span id="balance">0</span> USDT</div>
       <button onclick="handleWithdraw()">Withdraw</button>
       <button id="whatsappBtn">WhatsApp Support</button>
       <div class="referral-box">Your referral code: <b id="refcode">loading...</b></div>
@@ -152,12 +152,11 @@
   </div>
 
   <script>
-    // Basic variables and mining setup
-    let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
-    const usdtPerMs = 1 / 120000;
-    let miningStarted = false;
+    // Variables
+    let balance = parseInt(localStorage.getItem('usdtBalance')) || 0;
+    let miningInterval;
 
-    // Notification element and fake notification data
+    // Notification data
     const notificationEl = document.getElementById("topNotification");
     const names = ["Ayesha", "Alex", "John", "Maya", "Sami", "Liam", "Sophia", "Daniel", "Olivia", "Ravi"];
     const amounts = ["$100500", "$60000", "$50500", "$20000", "$15000", "$99999", "$45500", "$33300"];
@@ -189,7 +188,7 @@
     }
     setTimeout(randomNotification, 5000);
 
-    // On load, show dashboard or signup depending on localStorage
+    // On load, decide what to show
     window.onload = function () {
       const user = localStorage.getItem('usdt_user');
       if (user) {
@@ -206,7 +205,7 @@
         return;
       }
 
-      // Save the new user in localStorage USERS list
+      // Check for existing users list or create new
       let users = JSON.parse(localStorage.getItem('usdt_users') || '[]');
       if (users.includes(usernameInput)) {
         alert("Username already taken, please choose another.");
@@ -218,14 +217,19 @@
       localStorage.setItem('usdt_user', usernameInput);
 
       if (referralInput && referralInput !== usernameInput) {
-        localStorage.setItem('usdt_referral_used', referralInput);
-        localStorage.removeItem('usdt_referral_rewarded');
+        // Validate referral username exists in users
+        if (!users.includes(referralInput)) {
+          alert("Referral code does not exist.");
+          localStorage.removeItem('usdt_referral_used');
+        } else {
+          localStorage.setItem('usdt_referral_used', referralInput);
+          localStorage.removeItem('usdt_referral_rewarded');
+        }
       } else {
         localStorage.removeItem('usdt_referral_used');
         localStorage.removeItem('usdt_referral_rewarded');
       }
 
-      // Reset balance for new user
       balance = 0;
       localStorage.setItem('usdtBalance', balance.toString());
 
@@ -247,110 +251,97 @@
         localStorage.setItem('usdtBalance', balance.toString());
 
         const refKey = `ref_${referral}_bonus`;
-        const refBonus = parseFloat(localStorage.getItem(refKey)) || 0;
+        const refBonus = parseInt(localStorage.getItem(refKey)) || 0;
         localStorage.setItem(refKey, (refBonus + 200).toString());
 
         localStorage.setItem('usdt_referral_rewarded', 'yes');
       }
 
+      // Add referral bonus once to balance
       const refBonusKey = `ref_${user}_bonus`;
-      const refBonusStored = parseFloat(localStorage.getItem(refBonusKey)) || 0;
+      const refBonusStored = parseInt(localStorage.getItem(refBonusKey)) || 0;
       if (refBonusStored > 0) {
         balance += refBonusStored;
         localStorage.setItem('usdtBalance', balance.toString());
         localStorage.removeItem(refBonusKey);
       }
 
-      updateBalance();
-      updateWithdrawHistory();
-      startMining();
+      updateBalanceDisplay();
+
+      // Start mining interval - 1 USDT every 3 minutes = 180000 ms
+      if (miningInterval) clearInterval(miningInterval);
+      miningInterval = setInterval(() => {
+        balance += 1;
+        localStorage.setItem('usdtBalance', balance.toString());
+        updateBalanceDisplay();
+      }, 180000);
+
+      // Start first mining instantly to show fast progress if you want uncomment this:
+      // balance += 1;
+      // localStorage.setItem('usdtBalance', balance.toString());
+      // updateBalanceDisplay();
     }
 
-    function updateBalance() {
-      document.getElementById('balance').textContent = balance.toFixed(8);
-    }
-
-    function startMining() {
-      if (!miningStarted) {
-        setInterval(() => {
-          balance += usdtPerMs;
-          localStorage.setItem('usdtBalance', balance.toString());
-          updateBalance();
-        }, 10);
-        miningStarted = true;
-      }
+    function updateBalanceDisplay() {
+      document.getElementById('balance').textContent = balance.toString();
     }
 
     function handleWithdraw() {
-      if (balance >= 3000) {
-        alert("Redirecting to withdrawal page...");
-        window.location.href = "withdraw.html";
-      } else {
-        alert("Minimum withdrawal is $3000 USDT.");
+      if (balance <= 0) {
+        alert("No balance to withdraw.");
+        return;
       }
+      alert(`Withdrawal request sent for ${balance} USDT!`);
+      // For demo, reset balance to 0 after withdraw
+      balance = 0;
+      localStorage.setItem('usdtBalance', balance.toString());
+      updateBalanceDisplay();
     }
 
-    function updateWithdrawHistory() {
-      const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
-      const el = document.getElementById('withdraw-history');
-      el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
-    }
-
-    // The new referral submission logic with validation
     function sendReferral() {
-      const referrer = localStorage.getItem('usdt_user');
-      const usedBy = document.getElementById("refUsedBy").value.trim();
-
-      if (!usedBy) {
-        alert("Please enter the username.");
+      const user = localStorage.getItem('usdt_user');
+      if (!user) {
+        alert("You must be logged in.");
         return;
       }
 
-      if (usedBy === referrer) {
-        alert("Please do not enter self referrals or fake referrals. Your account is fully checked at withdrawal stage. Any violation will result in ban.");
+      const refUsedBy = document.getElementById('refUsedBy').value.trim();
+      if (!refUsedBy) {
+        alert("Please enter a username who used your code.");
         return;
       }
 
-      const users = JSON.parse(localStorage.getItem('usdt_users') || '[]');
-      if (!users.includes(usedBy)) {
-        alert("Please do not enter self referrals or fake referrals. Your account is fully checked at withdrawal stage. Any violation will result in ban.");
+      if (refUsedBy === user) {
+        alert("Please do not enter self referrals or fake referrals. Your account is fully checked at withdrawal stage. Violations lead to ban.");
         return;
       }
 
-      // If valid, add $200 instantly to current user's balance
+      // Validate refUsedBy exists in users
+      let users = JSON.parse(localStorage.getItem('usdt_users') || '[]');
+      if (!users.includes(refUsedBy)) {
+        alert("Entered username does not exist.");
+        return;
+      }
+
+      // Add $200 to current user's balance
       balance += 200;
       localStorage.setItem('usdtBalance', balance.toString());
-      updateBalance();
+      updateBalanceDisplay();
 
-      // Optionally add entry to withdrawHistory (for transparency)
-      let hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
-      hist.unshift(`Referral bonus +$200 from ${usedBy}`);
-      if (hist.length > 10) hist.pop();
-      localStorage.setItem('withdrawHistory', JSON.stringify(hist));
-      updateWithdrawHistory();
+      alert(`${refUsedBy} referral accepted! $200 added to your balance.`);
 
-      // Save referral bonus for the referred user, to prevent multiple refs on same username
-      const refKey = `ref_${usedBy}_credited`;
-      if (!localStorage.getItem(refKey)) {
-        localStorage.setItem(refKey, "true");
-      } else {
-        // If already credited, prevent double credit from same username
-        alert("This user was already credited before.");
+      // Save referral for notification or other processing (optional)
+      // For example, store who used the code:
+      let refListKey = `referrals_for_${user}`;
+      let currentRefs = JSON.parse(localStorage.getItem(refListKey) || "[]");
+      if (!currentRefs.includes(refUsedBy)) {
+        currentRefs.push(refUsedBy);
+        localStorage.setItem(refListKey, JSON.stringify(currentRefs));
       }
 
-      document.getElementById("refUsedBy").value = "";
-
-      // Optionally submit form anonymously (as you had it)
-      document.getElementById("hiddenRef").value = usedBy;
-      document.getElementById("notifyForm").submit();
-      alert("Referral submitted successfully. $200 added to your balance.");
+      document.getElementById('refUsedBy').value = "";
     }
-
-    document.getElementById('whatsappBtn').addEventListener('click', () => {
-      const phoneNumber = '16723004545';
-      const url = `https://wa.me/${phoneNumber}`;
-      window.open(url, '_blank');
-    });
   </script>
+
 </body>
 </html>
