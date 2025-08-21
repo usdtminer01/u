@@ -67,17 +67,15 @@
 
   <script>
     function handleSignup() {
-      const username = document.getElementById('username').value.trim().toLowerCase();
-      const referral = document.getElementById('referral').value.trim().toLowerCase();
+      const username = document.getElementById('username').value.trim();
+      const referral = document.getElementById('referral').value.trim();
 
       if (!username) {
         alert('Please enter a username.');
         return;
       }
 
-      // Save to localStorage
       localStorage.setItem('usdt_user', username);
-
       if (referral && referral !== username) {
         localStorage.setItem('usdt_referral_used', referral);
         localStorage.removeItem('usdt_referral_rewarded');
@@ -86,11 +84,9 @@
         localStorage.removeItem('usdt_referral_rewarded');
       }
 
-      // Redirect to dashboard
       window.location.href = 'dashboard.html';
     }
 
-    // Redirect if already signed up
     if (localStorage.getItem('usdt_user')) {
       window.location.href = 'dashboard.html';
     }
