@@ -142,6 +142,11 @@
   </div>
 
   <script>
+    // Redirect if no user is logged in (i.e., no username)
+    if (!localStorage.getItem('usdt_user')) {
+      window.location.href = 'index.html'; // Redirect to signup page if not logged in
+    }
+
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
     let miningStarted = false;
     const usdtPerMs = 1 / 120000;
@@ -263,3 +268,4 @@
   </script>
 </body>
 </html>
+
