@@ -75,26 +75,24 @@
         return;
       }
 
-      // Save username & referral in localStorage
+      // Save to localStorage
       localStorage.setItem('usdt_user', username);
-      if (referral) {
+      if (referral && referral !== username) {
         localStorage.setItem('usdt_referral_used', referral);
-        localStorage.removeItem('usdt_referral_rewarded'); // reset rewarded flag for new referrals
+        localStorage.removeItem('usdt_referral_rewarded');
       } else {
         localStorage.removeItem('usdt_referral_used');
         localStorage.removeItem('usdt_referral_rewarded');
       }
 
-      // Redirect to dashboard
+      // Redirect
       window.location.href = 'dashboard.html';
     }
 
-    // Optional: if user already logged in, skip signup
-    window.onload = () => {
-      if (localStorage.getItem('usdt_user')) {
-        window.location.href = 'dashboard.html';
-      }
-    };
+    // If already signed up, redirect
+    if (localStorage.getItem('usdt_user')) {
+      window.location.href = 'dashboard.html';
+    }
   </script>
 </body>
 </html>
