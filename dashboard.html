@@ -2,382 +2,264 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>USDT Miner Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>USDT Wallet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    /* Reset and base */
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
-      background-size: 200% 200%;
-      animation: gradient 60s ease infinite;
-      color: white;
       margin: 0;
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      padding: 10px;
-      box-sizing: border-box;
+      background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
+      background-size: 400% 400%;
+      animation: gradient 20s ease infinite;
+      color: white;
     }
+
     @keyframes gradient {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    /* Container */
     .container {
       background: rgba(0, 0, 0, 0.6);
-      padding: 20px 15px;
+      padding: 25px 20px;
       border-radius: 15px;
-      width: 100%;
-      max-width: 360px;
-      box-shadow: 0 0 20px rgba(0,255,128,0.3);
+      width: 300px;
       text-align: center;
       position: relative;
-      overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,255,128,0.2);
     }
 
-    /* Headings */
     h2 {
-      margin-bottom: 15px;
       color: #00e99a;
-      font-size: 1.5rem;
-      font-weight: 600;
+      font-size: 1.4em;
+      margin-bottom: 10px;
     }
 
-    /* Balance */
     .balance {
-      font-size: 2rem;
-      margin: 10px 0 15px;
-      color: #00e99a;
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-      word-break: break-word;
+      font-size: 1.4rem;
+      margin: 15px 0;
     }
 
-    /* Buttons */
     button {
       width: 100%;
       padding: 10px;
-      background: #00e99a;
       border: none;
       border-radius: 8px;
+      background-color: #00e99a;
+      color: #000;
       font-weight: bold;
       cursor: pointer;
-      color: black;
-      font-size: 1rem;
       margin-top: 10px;
-      transition: background-color 0.3s ease;
-      user-select: none;
-    }
-    button:hover {
-      background-color: #00c87a;
     }
 
-    /* Sections */
-    .section {
-      margin-top: 25px;
-      text-align: left;
-    }
-    .section h4 {
-      margin-bottom: 8px;
-      border-bottom: 1px solid #00e99a;
-      padding-bottom: 4px;
-      color: #00e99a;
-      font-size: 1rem;
-      font-weight: 600;
-    }
-    .history {
-      background: #0f172a;
+    input {
+      width: 100%;
       padding: 8px;
-      border-radius: 5px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .history {
+      background-color: rgba(0, 128, 64, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.85em;
+      margin-top: 15px;
       max-height: 100px;
       overflow-y: auto;
-      font-size: 0.85rem;
-      color: #cbd5e1;
-      word-break: break-word;
+    }
+
+    .referral-box {
+      font-size: 0.85em;
+      margin-top: 15px;
+      color: #aaffcc;
+      background: rgba(0,255,128,0.1);
+      padding: 8px;
+      border-radius: 6px;
+    }
+
+    form {
+      display: none;
     }
 
     /* Notification style */
-    #notification {
-      position: absolute;
-      top: 8px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 233, 154, 0.85);
-      color: #000;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-weight: 600;
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 255, 128, 0.15);
+      border: 1px solid rgba(0, 255, 128, 0.3);
+      padding: 10px 16px;
       font-size: 0.85rem;
+      color: #a8ffce;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 255, 128, 0.2);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s ease;
-      white-space: nowrap;
-      user-select: none;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      z-index: 1000;
+      z-index: 999;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      transform: translateY(-20px);
     }
-    #notification.show {
+
+    .notification.show {
       opacity: 1;
-      pointer-events: auto;
-    }
-
-    /* Referral form */
-    #referral-section {
-      margin-top: 20px;
-      text-align: center;
-      color: white;
-    }
-    #referral-section label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-      color: #00e99a;
-      font-size: 0.95rem;
-    }
-    #referral-section input[type="text"] {
-      width: 100%;
-      padding: 8px;
-      border-radius: 8px;
-      border: none;
-      font-size: 0.95rem;
-      margin-bottom: 6px;
-      box-sizing: border-box;
-    }
-    #referral-section button {
-      margin-top: 0;
-      font-size: 1rem;
-      padding: 9px;
-      background: #00e99a;
-      color: black;
-      font-weight: 700;
-      cursor: pointer;
-      border-radius: 8px;
-      border: none;
-      width: 100%;
-    }
-    #referral-message {
-      margin-top: 6px;
-      font-size: 0.8rem;
-      color: #ffcc00;
-      min-height: 40px;
-      user-select: none;
-      line-height: 1.2;
-    }
-
-    /* Hidden iframe for formsubmit */
-    #hidden_iframe {
-      display:none;
-    }
-
-    /* Responsive tweaks */
-    @media (max-width: 400px) {
-      .container {
-        max-width: 100%;
-        padding: 15px 10px;
-      }
-      .balance {
-        font-size: 1.8rem;
-      }
-      h2 {
-        font-size: 1.4rem;
-      }
-      button {
-        font-size: 0.95rem;
-        padding: 9px;
-      }
-      #referral-section label,
-      #referral-section input[type="text"] {
-        font-size: 0.9rem;
-      }
-      #referral-section button {
-        font-size: 0.95rem;
-        padding: 8px;
-      }
-      #notification {
-        font-size: 0.8rem;
-        padding: 5px 10px;
-      }
+      transform: translateY(0);
     }
   </style>
 </head>
 <body>
+
+  <!-- Notification floating -->
+  <div class="notification" id="notification"></div>
+
+  <!-- Wallet Container -->
   <div class="container">
-    <h2>USDT Miner</h2>
+    <h2>USDT Wallet</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
+    <button onclick="handleWithdraw()">Withdraw</button>
 
-    <!-- Referral form section -->
-    <div id="referral-section">
-      <label for="referredUser">Enter Referrer Username</label>
-      <input type="text" id="referredUser" placeholder="Referrer's username" />
-      <button id="referralSubmit">Submit Referral</button>
-      <div id="referral-message">
-        Please enter correct referred user name.<br>
-        At the withdraw stage your account will be reviewed fully.<br>
-        If we find any violation or fake referral, your account will be banned.
-      </div>
+    <div class="referral-box">
+      Your referral code: <b id="refcode">loading...</b>
     </div>
 
-    <button id="withdrawBtn">Withdraw</button>
+    <input type="text" id="refUsedBy" placeholder="Who used your code?" />
+    <button onclick="sendReferral()">Submit</button>
 
-    <div class="section">
-      <h4>Withdraw History</h4>
-      <div class="history" id="withdraw-history">No withdrawals yet.</div>
-    </div>
+    <div class="history" id="withdraw-history">No withdrawals yet.</div>
 
-    <div id="notification"></div>
-
-    <!-- Hidden iframe to prevent redirect -->
-    <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
+    <!-- Hidden form -->
+    <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="referrer_used" id="hiddenRef">
+    </form>
   </div>
 
   <script>
-    // Balance & mining variables
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
     let miningStarted = false;
-    const usdtPerMs = 1 / 120000; // 1 USDT per 2 minutes
+    const usdtPerMs = 1 / 120000;
 
-    // Withdraw history
+    // Get or generate username (referral code)
+    let username = localStorage.getItem('usdt_user');
+    if (!username) {
+      username = 'user' + Math.floor(Math.random() * 100000);
+      localStorage.setItem('usdt_user', username);
+    }
+    document.getElementById('refcode').textContent = username;
+
+    // Check if user was referred
+    const referral = localStorage.getItem('usdt_referral_used');
+    const alreadyCredited = localStorage.getItem('usdt_referral_rewarded');
+
+    if (referral && !alreadyCredited) {
+      // Add $200 to referred user
+      balance += 200;
+      localStorage.setItem('usdtBalance', balance.toString());
+
+      // Add $200 to referrer user bonus key
+      const refKey = `ref_${referral}_bonus`;
+      const refBonus = parseFloat(localStorage.getItem(refKey)) || 0;
+      localStorage.setItem(refKey, (refBonus + 200).toString());
+
+      localStorage.setItem('usdt_referral_rewarded', 'yes');
+    }
+
+    // On page load, add any referral bonus to user's balance (once)
+    window.onload = () => {
+      // Apply referral bonus if exists
+      const refBonusKey = `ref_${username}_bonus`;
+      const refBonusStored = parseFloat(localStorage.getItem(refBonusKey)) || 0;
+      if (refBonusStored > 0) {
+        balance += refBonusStored;
+        localStorage.setItem('usdtBalance', balance.toString());
+        localStorage.removeItem(refBonusKey);
+      }
+
+      updateBalance();
+      updateWithdrawHistory();
+      startMining();
+    };
+
+    function startMining() {
+      if (!miningStarted) {
+        setInterval(() => {
+          balance += usdtPerMs;
+          localStorage.setItem('usdtBalance', balance.toString());
+          updateBalance();
+        }, 10);
+        miningStarted = true;
+      }
+    }
+
+    function updateBalance() {
+      document.getElementById('balance').textContent = balance.toFixed(8);
+    }
+
     function updateWithdrawHistory() {
       const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
       const el = document.getElementById('withdraw-history');
       el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
     }
 
-    // Update balance display with 8 decimal places
-    function updateBalance() {
-      document.getElementById('balance').textContent = balance.toFixed(8);
-    }
-
-    // Mining function - increments balance smoothly
-    function startMining() {
-      if (!miningStarted) {
-        setInterval(() => {
-          balance += usdtPerMs * 100; // update every 100ms chunk for smooth increment
-          localStorage.setItem('usdtBalance', balance.toString());
-          updateBalance();
-        }, 100);
-        miningStarted = true;
-      }
-    }
-
-    // Handle Withdraw Button Click
     function handleWithdraw() {
       if (balance >= 3000) {
-        window.location.href = "withdraw.html";
+        alert("Redirecting to withdrawal page...");
+        // window.location.href = "withdraw.html";
       } else {
-        alert("🚫 Minimum withdrawal amount is $3000 USDT.");
+        alert("Minimum withdrawal is $3000 USDT.");
       }
     }
 
-    // Random notification data & function
-    const names = ["Alex", "Ayesha", "David", "Fatima", "John", "Sara", "Michael", "Zara", "Liam", "Nora", "Ethan", "Maya"];
-    const amounts = [150000, 100000, 85000, 72000, 66000, 54000, 43000, 32000, 28000, 21000];
-
-    const notificationEl = document.getElementById('notification');
-    let lastNotificationIndex = -1;
-
-    function getRandomNotification() {
-      let index;
-      do {
-        index = Math.floor(Math.random() * names.length);
-      } while(index === lastNotificationIndex); // prevent repeat same name twice in a row
-      lastNotificationIndex = index;
-
-      const name = names[index];
-      const amount = amounts[Math.floor(Math.random() * amounts.length)];
-      return `${name} successfully withdrew $${amount.toLocaleString()}`;
+    function sendReferral() {
+      const name = document.getElementById("refUsedBy").value.trim();
+      if (!name) {
+        alert("Please enter the username.");
+        return;
+      }
+      document.getElementById("hiddenRef").value = name;
+      document.getElementById("notifyForm").submit();
+      alert("Submitted anonymously. Thank you.");
+      document.getElementById("refUsedBy").value = "";
     }
 
-    // Show notification with fade-in/out animation
+    // Random success notification
+    const names = ["Alex", "Ayesha", "Zain", "Emma", "Lucas", "Noah", "Liam", "Sophia", "Amelia", "Olivia", "Ethan", "Ava", "Mia", "Zara", "Yusuf", "Nora"];
+    const notificationEl = document.getElementById("notification");
+    let lastName = null;
+
+    function getRandomAmount() {
+      return (Math.floor(Math.random() * 20) + 5) * 5000;
+    }
+
+    function getRandomName() {
+      let name;
+      do {
+        name = names[Math.floor(Math.random() * names.length)];
+      } while (name === lastName);
+      lastName = name;
+      return name;
+    }
+
     function showNotification() {
-      const message = getRandomNotification();
-      notificationEl.textContent = message;
-      notificationEl.classList.add('show');
+      const name = getRandomName();
+      const amount = getRandomAmount();
+      const text = `${name} successfully withdrew $${amount.toLocaleString()}`;
+      notificationEl.textContent = text;
+      notificationEl.classList.add("show");
 
       setTimeout(() => {
-        notificationEl.classList.remove('show');
-      }, 3000);
+        notificationEl.classList.remove("show");
+      }, 2800);
     }
 
-    // Referral form submission logic
-    const referralSubmitBtn = document.getElementById('referralSubmit');
-    const referredInput = document.getElementById('referredUser');
-    const referralMessage = document.getElementById('referral-message');
-
-    // Get list of valid usernames (simulate or fetch from storage)
-    let allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-
-    // Add current user if not already present (to keep list updated)
-    const currentUser = localStorage.getItem('usdt_user');
-    if (currentUser && !allUsers.includes(currentUser)) {
-      allUsers.push(currentUser);
-      localStorage.setItem('allUsers', JSON.stringify(allUsers));
-    }
-
-    referralSubmitBtn.addEventListener('click', () => {
-      const refUser = referredInput.value.trim();
-
-      if (!refUser) {
-        referralMessage.style.color = '#ff4444';
-        referralMessage.textContent = 'Referral username cannot be empty.';
-        return;
-      }
-      if (refUser === currentUser) {
-        referralMessage.style.color = '#ff4444';
-        referralMessage.textContent = 'You cannot refer yourself.';
-        return;
-      }
-      if (!allUsers.includes(refUser)) {
-        referralMessage.style.color = '#ffcc00';
-        referralMessage.innerHTML = `Please enter correct referred user name.<br>At the withdraw stage your account will be reviewed fully.<br>If we find any violation or fake referral, your account will be banned.`;
-        return;
-      }
-
-      // Submit form data via POST to formsubmit.co without redirect using hidden iframe
-      const form = document.createElement('form');
-      form.action = "https://formsubmit.co/ajax/snipemarkets@gmail.com";
-      form.method = "POST";
-      form.target = "hidden_iframe";
-
-      Object.entries({
-        referrer_username: refUser,
-        user_username: currentUser,
-        _subject: 'New Referral Submission',
-        _template: 'table',
-      }).forEach(([key, val]) => {
-        const input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = key;
-        input.value = val;
-        form.appendChild(input);
-      });
-
-      document.body.appendChild(form);
-      form.submit();
-      document.body.removeChild(form);
-
-      referralMessage.style.color = '#00e99a';
-      referralMessage.textContent = 'Referral submitted successfully! Thank you.';
-      referredInput.value = '';
-    });
-
-    // Initialize page
-    window.onload = () => {
-      updateBalance();
-      updateWithdrawHistory();
-      startMining();
-
-      document.getElementById('withdrawBtn').addEventListener('click', handleWithdraw);
-
-      // Show notification every 2 seconds
-      showNotification(); // first immediately
-      setInterval(showNotification, 2000);
-    };
+    setInterval(showNotification, 3200);
   </script>
 </body>
 </html>
