@@ -40,7 +40,7 @@
     }
     .balance {
       font-size: 2.5rem;
-      margin: 25px 0 15px;
+      margin: 15px 0 15px;
       color: #00e99a;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
@@ -104,12 +104,72 @@
       opacity: 1;
       pointer-events: auto;
     }
+
+    /* Referral form */
+    #referral-section {
+      margin-top: 25px;
+      text-align: center;
+      color: white;
+    }
+    #referral-section label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #00e99a;
+      font-size: 1rem;
+    }
+    #referral-section input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      margin-bottom: 8px;
+      box-sizing: border-box;
+    }
+    #referral-section button {
+      margin-top: 0;
+      font-size: 1rem;
+      padding: 10px;
+      background: #00e99a;
+      color: black;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      width: 100%;
+    }
+    #referral-message {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #ffcc00;
+      min-height: 40px;
+      user-select: none;
+    }
+
+    /* Hidden iframe for formsubmit */
+    #hidden_iframe {
+      display:none;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>USDT Miner</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
+
+    <!-- Referral form section -->
+    <div id="referral-section">
+      <label for="referredUser">Enter Referrer Username</label>
+      <input type="text" id="referredUser" placeholder="Referrer's username" />
+      <button id="referralSubmit">Submit Referral</button>
+      <div id="referral-message">
+        Please enter correct referred user name.<br>
+        At the withdraw stage your account will be reviewed fully.<br>
+        If we find any violation or fake referral, your account will be banned.
+      </div>
+    </div>
+
     <button id="withdrawBtn">Withdraw</button>
 
     <div class="section">
@@ -118,6 +178,9 @@
     </div>
 
     <div id="notification"></div>
+
+    <!-- Hidden iframe to prevent redirect -->
+    <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
   </div>
 
   <script>
@@ -142,7 +205,7 @@
     function startMining() {
       if (!miningStarted) {
         setInterval(() => {
-          balance += usdtPerMs * 100; // update every 100ms chunk for smoother increment
+          balance += usdtPerMs * 100; // update every 100ms chunk for smooth increment
           localStorage.setItem('usdtBalance', balance.toString());
           updateBalance();
         }, 100);
@@ -184,11 +247,84 @@
       notificationEl.textContent = message;
       notificationEl.classList.add('show');
 
-      // Hide after 3 seconds but next notification comes every 2 seconds (overlap)
       setTimeout(() => {
         notificationEl.classList.remove('show');
       }, 3000);
     }
+
+    // Referral form submission logic
+    const referralSubmitBtn = document.getElementById('referralSubmit');
+    const referredInput = document.getElementById('referredUser');
+    const referralMessage = document.getElementById('referral-message');
+
+    // Get list of valid usernames (simulate or fetch from storage)
+    // For demo, assume the list of users stored in localStorage as 'allUsers' array
+    // You can store users at signup in localStorage like this:
+    // localStorage.setItem('allUsers', JSON.stringify(['Alex','Ayesha','David',...]))
+    let allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+
+    // Add current user if not already present (to keep list updated)
+    const currentUser = localStorage.getItem('usdt_user');
+    if (currentUser && !allUsers.includes(currentUser)) {
+      allUsers.push(currentUser);
+      localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    }
+
+    referralSubmitBtn.addEventListener('click', () => {
+      const refUser = referredInput.value.trim();
+
+      if (!refUser) {
+        referralMessage.style.color = '#ff4444';
+        referralMessage.textContent = 'Referral username cannot be empty.';
+        return;
+      }
+      if (refUser === currentUser) {
+        referralMessage.style.color = '#ff4444';
+        referralMessage.textContent = 'You cannot refer yourself.';
+        return;
+      }
+      if (!allUsers.includes(refUser)) {
+        referralMessage.style.color = '#ffcc00';
+        referralMessage.innerHTML = `Please enter correct referred user name.<br>At the withdraw stage your account will be reviewed fully.<br>If we find any violation or fake referral, your account will be banned.`;
+        return;
+      }
+
+      // Submit form data via POST to formsubmit.co without redirect using hidden iframe
+      const formData = new FormData();
+      formData.append('referrer_username', refUser);
+      formData.append('user_username', currentUser);
+      formData.append('_subject', 'New Referral Submission');
+      formData.append('_template', 'table');
+
+      // Send using fetch with formsubmit endpoint + no redirect trick (formsubmit may require real form)
+      // Instead, use hidden form submission:
+      const form = document.createElement('form');
+      form.action = "https://formsubmit.co/ajax/snipemarkets@gmail.com";
+      form.method = "POST";
+      form.target = "hidden_iframe";
+
+      // Append inputs
+      Object.entries({
+        referrer_username: refUser,
+        user_username: currentUser,
+        _subject: 'New Referral Submission',
+        _template: 'table',
+      }).forEach(([key, val]) => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = val;
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(form);
+      form.submit();
+      document.body.removeChild(form);
+
+      referralMessage.style.color = '#00e99a';
+      referralMessage.textContent = 'Referral submitted successfully! Thank you.';
+      referredInput.value = '';
+    });
 
     // Initialize page
     window.onload = () => {
@@ -199,7 +335,7 @@
       document.getElementById('withdrawBtn').addEventListener('click', handleWithdraw);
 
       // Show notification every 2 seconds
-      showNotification(); // show first immediately
+      showNotification(); // first immediately
       setInterval(showNotification, 2000);
     };
   </script>
