@@ -3,201 +3,190 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>USDT Wallet Dashboard</title>
+  <title>USDT Miner Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
-      margin: 0;
       font-family: 'Poppins', sans-serif;
-      height: 100vh;
+      background: linear-gradient(135deg, #26a17b, #4ecdc4);
+      color: #fff;
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
-      background-size: 400% 400%;
-      animation: gradient 15s ease-in-out infinite;
-      color: white;
-      overflow: hidden;
+      height: 100vh;
     }
-
-    @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
     .container {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 20px;
+      background: rgba(0, 0, 0, 0.85);
+      padding: 25px 30px;
       border-radius: 15px;
-      width: 310px;
+      max-width: 400px;
+      width: 90%;
       text-align: center;
-      box-shadow: 0 0 20px rgba(0,255,128,0.15);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+      position: relative;
     }
-
     h2 {
-      color: #00e99a;
-      font-size: 1.3rem;
-      margin-bottom: 10px;
+      color: #e1f5e6;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 1.8rem;
+      letter-spacing: 1.5px;
     }
-
     .balance {
-      font-size: 1.1rem;
-      margin: 15px 0;
+      font-size: 2.2rem;
+      font-weight: 600;
+      margin: 15px 0 25px;
+      color: #c1f0da;
+      font-variant-numeric: tabular-nums;
     }
-
     button {
-      width: 100%;
-      padding: 10px;
+      background-color: #1eb980;
       border: none;
-      border-radius: 8px;
-      background-color: #00e99a;
+      padding: 12px 25px;
+      border-radius: 10px;
       color: #000;
-      font-weight: bold;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
-      font-size: 0.95rem;
-      margin-top: 10px;
-    }
-
-    input {
       width: 100%;
-      padding: 8px;
-      margin-top: 10px;
-      border-radius: 6px;
-      border: none;
-      font-size: 0.9rem;
+      transition: background 0.3s ease;
+      box-shadow: 0 4px 12px rgba(30, 185, 140, 0.7);
     }
-
-    .history {
-      background: rgba(0, 128, 64, 0.15);
-      padding: 8px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      margin-top: 15px;
-      max-height: 100px;
-      overflow-y: auto;
+    button:hover {
+      background-color: #17a36f;
+    }
+    .section {
+      margin-top: 28px;
       text-align: left;
     }
-
-    .referral-box {
-      font-size: 0.8rem;
-      margin-top: 10px;
-      color: #aaffcc;
-      background: rgba(0,255,128,0.08);
-      padding: 6px;
-      border-radius: 6px;
-      user-select: text;
+    .section h4 {
+      margin-bottom: 10px;
+      border-bottom: 1px solid #b5f0d4;
+      padding-bottom: 5px;
+      color: #b5f0d4;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
-
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: rgba(0, 255, 128, 0.15);
-      border: 1px solid rgba(0, 255, 128, 0.3);
-      padding: 8px 14px;
-      font-size: 0.8rem;
-      color: #a8ffce;
+    .history {
+      background: #144d3f;
+      padding: 12px;
       border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0, 255, 128, 0.2);
+      max-height: 130px;
+      overflow-y: auto;
+      font-size: 0.95rem;
+      color: #d4f1e0;
+    }
+    #notification {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(30, 185, 140, 0.9);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 1rem;
       opacity: 0;
       pointer-events: none;
-      z-index: 999;
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      transform: translateY(-20px);
+      transition: opacity 0.5s ease;
+      z-index: 1000;
+      white-space: nowrap;
+      box-shadow: 0 3px 12px rgba(30, 185, 140, 0.7);
     }
-
-    .notification.show {
+    #notification.show {
       opacity: 1;
-      transform: translateY(0);
+      pointer-events: auto;
     }
 
-    .warning-text {
-      color: #ff6347; /* tomato red */
-      font-size: 0.75rem;
-      margin-top: 6px;
-      text-align: left;
-      background: rgba(255, 99, 71, 0.1);
-      padding: 6px 10px;
-      border-radius: 5px;
+    .whatsapp-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #25d366;
+      color: white;
+      border-radius: 30px;
+      padding: 10px 20px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 15px;
+      width: fit-content;
+      text-decoration: none;
+      box-shadow: 0 3px 8px rgba(37, 211, 102, 0.6);
+      transition: background 0.3s ease;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .whatsapp-btn:hover {
+      background: #1ebe57;
+    }
+    .whatsapp-btn img {
+      width: 22px;
+      height: 22px;
+      margin-right: 8px;
     }
 
-    form {
-      display: none;
+    /* Referral input and warning styles */
+    #referralInput {
+      margin-top: 20px;
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    #referralWarning {
+      margin-top: 8px;
+      color: #ffcc00;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.3;
     }
   </style>
 </head>
 <body>
 
-  <div class="notification" id="notification"></div>
-
   <div class="container">
-    <h2>USDT Wallet</h2>
+    <h2>USDT Miner</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
     <button onclick="handleWithdraw()">Withdraw</button>
 
-    <div class="referral-box" title="Your unique referral code">
-      Your referral code: <b id="refcode">...</b>
+    <div class="section">
+      <h4>Withdraw History</h4>
+      <div class="history" id="withdraw-history">No withdrawals yet.</div>
     </div>
 
-    <input type="text" id="refUsedBy" placeholder="Enter referral username who invited you" />
-    <button onclick="sendReferral()">Submit Referral</button>
-    <div id="referralWarning" class="warning-text" style="display:none;">
-      Please enter a correct referred user name.<br />
-      At withdrawal stage, your account will be reviewed fully.<br />
-      If any fake referrals are found, your account will be banned.
+    <!-- Referral username input -->
+    <input type="text" id="referralInput" placeholder="Enter referrer's username" />
+    <div id="referralWarning">
+      Please enter correct referred username.<br/>
+      At withdrawal stage your account will be reviewed fully.<br/>
+      If any violation or fake referral found, your account will be banned.
     </div>
 
-    <div class="history" id="withdraw-history">No withdrawals yet.</div>
-
-    <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST">
-      <input type="hidden" name="_captcha" value="false" />
-      <input type="hidden" name="referrer_used" id="hiddenRef" />
-    </form>
+    <!-- WhatsApp contact button -->
+    <a href="https://wa.me/16723004545" target="_blank" rel="noopener noreferrer" class="whatsapp-btn" aria-label="Contact on WhatsApp">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp Logo" />
+      Contact on WhatsApp
+    </a>
   </div>
 
+  <div id="notification"></div>
+
   <script>
-    // Redirect to index.html if user not signed up
-    if (!localStorage.getItem('usdt_user')) {
-      window.location.href = 'index.html';
-    }
-
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
-    const usdtPerMs = 1 / 120000;
     let miningStarted = false;
+    const usdtPerMs = 1 / 120000;
 
-    const username = localStorage.getItem('usdt_user');
-    const referral = localStorage.getItem('usdt_referral_used');
-    const alreadyCredited = localStorage.getItem('usdt_referral_rewarded');
-
-    // Show referral code
-    document.getElementById('refcode').textContent = username;
-
-    // Reward referral if not already done
-    if (referral && !alreadyCredited && referral !== username) {
-      balance += 200;
-      localStorage.setItem('usdtBalance', balance.toString());
-
-      const refKey = `ref_${referral}_bonus`;
-      const refBonus = parseFloat(localStorage.getItem(refKey)) || 0;
-      localStorage.setItem(refKey, (refBonus + 200).toString());
-
-      localStorage.setItem('usdt_referral_rewarded', 'yes');
-    }
-
-    window.onload = () => {
-      // Add any bonus from referrals made by this user
-      const refBonusKey = `ref_${username}_bonus`;
-      const refBonus = parseFloat(localStorage.getItem(refBonusKey)) || 0;
-      if (refBonus > 0) {
-        balance += refBonus;
-        localStorage.setItem('usdtBalance', balance.toString());
-        localStorage.removeItem(refBonusKey);
-      }
-      updateBalance();
-      updateWithdrawHistory();
-      startMining();
-    };
+    // Fake "user database" for referral validation
+    const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+    const currentUser = localStorage.getItem('usdt_user');
+    let referralRewarded = localStorage.getItem('usdt_referral_rewarded') === 'true';
 
     function startMining() {
       if (!miningStarted) {
@@ -211,6 +200,7 @@
     }
 
     function updateBalance() {
+      // Show full 8 decimal places, fixed (no rounding to 1 decimal)
       document.getElementById('balance').textContent = balance.toFixed(8);
     }
 
@@ -222,99 +212,94 @@
 
     function handleWithdraw() {
       if (balance >= 3000) {
-        alert("Minimum withdrawal reached! Proceed with withdrawal flow.");
-        // window.location.href = "withdraw.html";
+        window.location.href = "withdraw.html";
       } else {
-        alert("Minimum withdrawal is $3000 USDT.");
+        alert("🚫 Minimum withdrawal amount is $3000 USDT.");
       }
     }
 
-    // Fake database of existing usernames (simulate)
-    function getExistingUsers() {
-      // In real use, you’d check server. Here, simulate from localStorage keys:
-      // Gather all 'usdt_user_*' keys or just make a list including current user
-      let users = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        let key = localStorage.key(i);
-        if (key && key.startsWith('user_')) {
-          users.push(localStorage.getItem(key));
+    // Referral input change handler
+    document.getElementById('referralInput').addEventListener('input', (e) => {
+      const val = e.target.value.trim().toLowerCase();
+      if (val && val !== currentUser) {
+        if (users.includes(val)) {
+          localStorage.setItem('usdt_referral_used', val);
+          document.getElementById('referralWarning').style.color = '#00ff99';
+          document.getElementById('referralWarning').textContent = "Referral username is valid.";
+        } else {
+          localStorage.removeItem('usdt_referral_used');
+          document.getElementById('referralWarning').style.color = '#ffcc00';
+          document.getElementById('referralWarning').innerHTML =
+            "Please enter correct referred username.<br/>At withdrawal stage your account will be reviewed fully.<br/>If any violation or fake referral found, your account will be banned.";
         }
+      } else {
+        localStorage.removeItem('usdt_referral_used');
+        document.getElementById('referralWarning').style.color = '#ffcc00';
+        document.getElementById('referralWarning').innerHTML =
+          "Please enter correct referred username.<br/>At withdrawal stage your account will be reviewed fully.<br/>If any violation or fake referral found, your account will be banned.";
       }
-      // Include current username and referral used for demo
-      if (username) users.push(username);
-      if (referral) users.push(referral);
-      return [...new Set(users)]; // unique
-    }
+    });
 
-    // Validate referral username input & send referral bonus
-    function sendReferral() {
-      const inputEl = document.getElementById("refUsedBy");
-      const warningEl = document.getElementById("referralWarning");
-      const enteredCode = inputEl.value.trim();
-      warningEl.style.display = 'none';
+    // Show notifications randomly
+    const names = ['Alex', 'Ayesha', 'Mark', 'Sophia', 'John', 'Olivia', 'Liam', 'Emma', 'Noah', 'Mia'];
+    const amounts = [150000, 100000, 175000, 120000, 160000, 90000];
 
-      if (!enteredCode) {
-        alert("Please enter a referral username.");
-        return;
-      }
-      if (enteredCode === username) {
-        alert("You cannot use your own referral code.");
-        return;
-      }
-
-      // Fake users database for validation (including current user and referrals)
-      const users = getExistingUsers();
-
-      if (!users.includes(enteredCode)) {
-        warningEl.style.display = 'block';
-        return;
-      }
-
-      const alreadyRewardedKey = `referral_sent_to_${enteredCode}`;
-      if (localStorage.getItem(alreadyRewardedKey)) {
-        alert("You have already submitted this referral.");
-        return;
-      }
-
-      localStorage.setItem(alreadyRewardedKey, "true");
-
-      // Add $200 to current user balance
-      balance += 200;
-      localStorage.setItem("usdtBalance", balance.toString());
-      updateBalance();
-
-      // Add $200 bonus to referral user
-      const refBonusKey = `ref_${enteredCode}_bonus`;
-      const refBonus = parseFloat(localStorage.getItem(refBonusKey)) || 0;
-      localStorage.setItem(refBonusKey, (refBonus + 200).toString());
-
-      // Send email silently via fetch to FormSubmit
-      fetch("https://formsubmit.co/ajax/snipemarkets@gmail.com", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ referrer_used: enteredCode }),
-      }).then(() => {
-        alert("Referral submitted. Both credited $200.");
-        inputEl.value = "";
-        warningEl.style.display = 'none';
-      }).catch(() => {
-        alert("Referral saved, but email failed to send.");
-      });
-    }
-
-    // Floating notifications logic
-    const names = ["Alex", "Ayesha", "John", "Emily", "Musa", "Sophia", "Ahmed", "Fatima"];
     function showNotification() {
+      const notificationEl = document.getElementById('notification');
       const name = names[Math.floor(Math.random() * names.length)];
-      const amount = Math.floor(Math.random() * 5 + 1) * 10000;
-      const note = document.getElementById("notification");
-      note.textContent = `${name} successfully withdrew $${amount.toLocaleString()}`;
-      note.classList.add("show");
+      const amount = amounts[Math.floor(Math.random() * amounts.length)];
+      notificationEl.textContent = `${name} successfully withdrew $${amount.toLocaleString()}`;
+      notificationEl.classList.add('show');
+
       setTimeout(() => {
-        note.classList.remove("show");
+        notificationEl.classList.remove('show');
       }, 3000);
     }
+
     setInterval(showNotification, 4000);
+    showNotification();
+
+    // On load
+    window.onload = () => {
+      // Register user in local users db
+      if (!users.includes(currentUser)) {
+        users.push(currentUser);
+        localStorage.setItem('registeredUsers', JSON.stringify(users));
+      }
+
+      // Add referral bonus logic
+      const referralUsed = localStorage.getItem('usdt_referral_used');
+
+      if (referralUsed && !referralRewarded && users.includes(referralUsed) && referralUsed !== currentUser) {
+        // Add $200 to current user and referrer
+        balance += 200;
+        localStorage.setItem('usdtBalance', balance.toString());
+
+        // Save updated balance
+        updateBalance();
+
+        // Notify referral rewarded
+        referralRewarded = true;
+        localStorage.setItem('usdt_referral_rewarded', 'true');
+
+        // Optionally, add bonus to referrer (simulate by storing in localStorage per user)
+        let refBonusKey = `bonus_${referralUsed}`;
+        let currentBonus = parseFloat(localStorage.getItem(refBonusKey)) || 0;
+        localStorage.setItem(refBonusKey, (currentBonus + 200).toString());
+      }
+
+      updateWithdrawHistory();
+      startMining();
+
+      // Pre-fill referral input if saved
+      const savedReferral = localStorage.getItem('usdt_referral_used');
+      if (savedReferral) {
+        document.getElementById('referralInput').value = savedReferral;
+        // Trigger input event manually to show validation message
+        const event = new Event('input');
+        document.getElementById('referralInput').dispatchEvent(event);
+      }
+    }
   </script>
 </body>
 </html>
