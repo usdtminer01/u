@@ -17,6 +17,7 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      position: relative;
     }
 
     @keyframes gradient {
@@ -32,6 +33,7 @@
       width: 300px;
       box-shadow: 0 0 20px rgba(0,255,128,0.3);
       text-align: center;
+      z-index: 1;
     }
 
     h2 {
@@ -110,9 +112,33 @@
       height: 20px;
       margin-right: 8px;
     }
+
+    /* Notification system */
+    #notification-box {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      padding: 8px 16px;
+      border-radius: 8px;
+      color: #00e99a;
+      font-size: 0.9rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    #notification-box.show {
+      opacity: 1;
+      transform: translate(-50%, 0px);
+    }
   </style>
 </head>
 <body>
+
+  <!-- Notification Box -->
+  <div id="notification-box"></div>
 
   <div class="container">
     <h2>USDT Miner</h2>
@@ -132,8 +158,8 @@
 
   <script>
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
+    const usdtPerMs = 1 / 120000; // 1 USDT every 2 minutes
     let miningStarted = false;
-    const usdtPerMs = 1 / 120000; // 1 USDT per 2 minutes
 
     function updateBalanceDisplay() {
       document.getElementById('balance').textContent = balance.toFixed(8);
@@ -156,8 +182,6 @@
     function startMining() {
       if (!miningStarted) {
         miningStarted = true;
-
-        // Smooth simulated mining (every 10ms)
         setInterval(() => {
           balance += usdtPerMs * 10;
           localStorage.setItem('usdtBalance', balance.toString());
@@ -166,10 +190,36 @@
       }
     }
 
+    // Notification system
+    const names = ["Alex", "Ayesha", "John", "Sara", "Mike", "Liam", "Noah", "Emma", "Sophia", "Olivia"];
+    let lastName = "";
+
+    function showNotification() {
+      let name;
+      do {
+        name = names[Math.floor(Math.random() * names.length)];
+      } while (name === lastName);
+      lastName = name;
+
+      const amount = Math.floor(Math.random() * 50000 + 100000).toLocaleString();
+      const message = `${name} successfully withdrew $${amount}`;
+      const notifBox = document.getElementById('notification-box');
+
+      notifBox.textContent = message;
+      notifBox.classList.add('show');
+
+      setTimeout(() => {
+        notifBox.classList.remove('show');
+      }, 3000);
+    }
+
     window.onload = () => {
       updateBalanceDisplay();
       updateWithdrawHistory();
       startMining();
+
+      // Start notifications
+      setInterval(showNotification, 3000);
     };
   </script>
 
