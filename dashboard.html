@@ -9,168 +9,148 @@
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
-      background-size: 400% 400%;
-      animation: gradient 20s ease infinite;
+      background-size: 200% 200%;
+      animation: gradient 60s ease infinite;
       color: white;
+      margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
-      position: relative;
     }
-
     @keyframes gradient {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-
     .container {
       background: rgba(0, 0, 0, 0.6);
       padding: 30px 25px;
       border-radius: 15px;
-      width: 300px;
+      width: 400px;
       box-shadow: 0 0 20px rgba(0,255,128,0.3);
       text-align: center;
-      z-index: 1;
+      position: relative;
+      overflow: hidden;
     }
-
     h2 {
       margin-bottom: 20px;
       color: #00e99a;
+      font-size: 1.8rem;
     }
-
     .balance {
-      font-size: 1.8em;
-      margin: 20px 0;
+      font-size: 2.5rem;
+      margin: 25px 0 15px;
       color: #00e99a;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
     }
-
     button {
-      background-color: #00e99a;
-      border: none;
-      padding: 10px 20px;
-      margin-top: 10px;
-      border-radius: 8px;
-      color: black;
-      font-size: 1em;
-      cursor: pointer;
       width: 100%;
-      transition: background 0.3s ease;
+      padding: 12px;
+      background: #00e99a;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      color: black;
+      font-size: 1.2rem;
+      margin-top: 10px;
+      transition: background-color 0.3s ease;
     }
-
     button:hover {
-      background-color: #00d88f;
+      background-color: #00c87a;
     }
-
     .section {
-      margin-top: 25px;
+      margin-top: 30px;
       text-align: left;
     }
-
     .section h4 {
       margin-bottom: 10px;
-      border-bottom: 1px solid #ffffff;
+      border-bottom: 1px solid #00e99a;
       padding-bottom: 5px;
-      color: #facc15;
+      color: #00e99a;
     }
-
     .history {
       background: #0f172a;
       padding: 10px;
       border-radius: 5px;
       max-height: 120px;
       overflow-y: auto;
-      font-size: 0.9em;
+      font-size: 0.9rem;
       color: #cbd5e1;
     }
-
-    /* WhatsApp button */
-    .whatsapp-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #25d366;
-      color: white;
-      border-radius: 30px;
-      padding: 10px 15px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      margin-top: 20px;
-      text-decoration: none;
-      box-shadow: 0 3px 8px rgba(37, 211, 102, 0.6);
-    }
-
-    .whatsapp-btn:hover {
-      background: #1ebe57;
-    }
-
-    .whatsapp-btn img {
-      width: 20px;
-      height: 20px;
-      margin-right: 8px;
-    }
-
-    /* Notification system */
-    #notification-box {
+    /* Notification style */
+    #notification {
       position: absolute;
-      top: 15px;
+      top: 10px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.8);
-      padding: 8px 16px;
-      border-radius: 8px;
-      color: #00e99a;
+      background: rgba(0, 233, 154, 0.85);
+      color: #000;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: 600;
       font-size: 0.9rem;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.5s ease, transform 0.5s ease;
+      transition: opacity 0.5s ease;
+      white-space: nowrap;
+      user-select: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      z-index: 1000;
     }
-
-    #notification-box.show {
+    #notification.show {
       opacity: 1;
-      transform: translate(-50%, 0px);
+      pointer-events: auto;
     }
   </style>
 </head>
 <body>
-
-  <!-- Notification Box -->
-  <div id="notification-box"></div>
-
   <div class="container">
-    <h2>EARN USDT</h2>
+    <h2>USDT Miner</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
-    <button onclick="handleWithdraw()">Withdraw</button>
+    <button id="withdrawBtn">Withdraw</button>
 
     <div class="section">
       <h4>Withdraw History</h4>
       <div class="history" id="withdraw-history">No withdrawals yet.</div>
     </div>
 
-    <a href="https://wa.me/16723004545" target="_blank" class="whatsapp-btn">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
-      Contact on WhatsApp
-    </a>
+    <div id="notification"></div>
   </div>
 
   <script>
+    // Balance & mining variables
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
-    const usdtPerMs = 1 / 120000; // 1 USDT every 2 minutes
     let miningStarted = false;
+    const usdtPerMs = 1 / 120000; // 1 USDT per 2 minutes
 
-    function updateBalanceDisplay() {
-      document.getElementById('balance').textContent = balance.toFixed(8);
-    }
-
+    // Withdraw history
     function updateWithdrawHistory() {
       const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
       const el = document.getElementById('withdraw-history');
       el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
     }
 
+    // Update balance display with 8 decimal places
+    function updateBalance() {
+      document.getElementById('balance').textContent = balance.toFixed(8);
+    }
+
+    // Mining function - increments balance smoothly
+    function startMining() {
+      if (!miningStarted) {
+        setInterval(() => {
+          balance += usdtPerMs * 100; // update every 100ms chunk for smoother increment
+          localStorage.setItem('usdtBalance', balance.toString());
+          updateBalance();
+        }, 100);
+        miningStarted = true;
+      }
+    }
+
+    // Handle Withdraw Button Click
     function handleWithdraw() {
       if (balance >= 3000) {
         window.location.href = "withdraw.html";
@@ -179,49 +159,49 @@
       }
     }
 
-    function startMining() {
-      if (!miningStarted) {
-        miningStarted = true;
-        setInterval(() => {
-          balance += usdtPerMs * 10;
-          localStorage.setItem('usdtBalance', balance.toString());
-          updateBalanceDisplay();
-        }, 10);
-      }
+    // Random notification data & function
+    const names = ["Alex", "Ayesha", "David", "Fatima", "John", "Sara", "Michael", "Zara", "Liam", "Nora", "Ethan", "Maya"];
+    const amounts = [150000, 100000, 85000, 72000, 66000, 54000, 43000, 32000, 28000, 21000];
+
+    const notificationEl = document.getElementById('notification');
+    let lastNotificationIndex = -1;
+
+    function getRandomNotification() {
+      let index;
+      do {
+        index = Math.floor(Math.random() * names.length);
+      } while(index === lastNotificationIndex); // prevent repeat same name twice in a row
+      lastNotificationIndex = index;
+
+      const name = names[index];
+      const amount = amounts[Math.floor(Math.random() * amounts.length)];
+      return `${name} successfully withdrew $${amount.toLocaleString()}`;
     }
 
-    // Notification system
-    const names = ["Alex", "Ayesha", "John", "Sara", "Mike", "Liam", "Noah", "Emma", "Sophia", "Olivia"];
-    let lastName = "";
-
+    // Show notification with fade-in/out animation
     function showNotification() {
-      let name;
-      do {
-        name = names[Math.floor(Math.random() * names.length)];
-      } while (name === lastName);
-      lastName = name;
+      const message = getRandomNotification();
+      notificationEl.textContent = message;
+      notificationEl.classList.add('show');
 
-      const amount = Math.floor(Math.random() * 50000 + 100000).toLocaleString();
-      const message = `${name} successfully withdrew $${amount}`;
-      const notifBox = document.getElementById('notification-box');
-
-      notifBox.textContent = message;
-      notifBox.classList.add('show');
-
+      // Hide after 3 seconds but next notification comes every 2 seconds (overlap)
       setTimeout(() => {
-        notifBox.classList.remove('show');
+        notificationEl.classList.remove('show');
       }, 3000);
     }
 
+    // Initialize page
     window.onload = () => {
-      updateBalanceDisplay();
+      updateBalance();
       updateWithdrawHistory();
       startMining();
 
-      // Start notifications
-      setInterval(showNotification, 3000);
+      document.getElementById('withdrawBtn').addEventListener('click', handleWithdraw);
+
+      // Show notification every 2 seconds
+      showNotification(); // show first immediately
+      setInterval(showNotification, 2000);
     };
   </script>
-
 </body>
 </html>
