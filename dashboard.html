@@ -133,10 +133,10 @@
   <script>
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
     let miningStarted = false;
-    const balanceDisplay = document.getElementById('balance');
+    const usdtPerMs = 1 / 120000; // 1 USDT per 2 minutes
 
-    function updateBalance() {
-      balanceDisplay.textContent = balance.toFixed(8);
+    function updateBalanceDisplay() {
+      document.getElementById('balance').textContent = balance.toFixed(8);
     }
 
     function updateWithdrawHistory() {
@@ -153,28 +153,21 @@
       }
     }
 
-    // Start mining after page load
     function startMining() {
       if (!miningStarted) {
         miningStarted = true;
 
-        // Animate smooth mining (for visuals only)
+        // Smooth simulated mining (every 10ms)
         setInterval(() => {
+          balance += usdtPerMs * 10;
           localStorage.setItem('usdtBalance', balance.toString());
-          updateBalance();
-        }, 500);
-
-        // Add 1 USDT every 2 minutes (120000 ms)
-        setInterval(() => {
-          balance += 1;
-          localStorage.setItem('usdtBalance', balance.toString());
-          updateBalance();
-        }, 120000);
+          updateBalanceDisplay();
+        }, 10);
       }
     }
 
     window.onload = () => {
-      updateBalance();
+      updateBalanceDisplay();
       updateWithdrawHistory();
       startMining();
     };
