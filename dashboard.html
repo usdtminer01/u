@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>USDT Miner Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    /* Reset and base */
+    /* Base styles */
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
@@ -30,17 +30,17 @@
     /* Container */
     .container {
       background: rgba(0, 0, 0, 0.6);
-      padding: 20px 15px;
+      padding: 20px 15px 40px;
       border-radius: 15px;
       width: 100%;
       max-width: 360px;
       box-shadow: 0 0 20px rgba(0,255,128,0.3);
       text-align: center;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
     }
 
-    /* Headings */
+    /* Header */
     h2 {
       margin-bottom: 15px;
       color: #00e99a;
@@ -58,8 +58,8 @@
       word-break: break-word;
     }
 
-    /* Buttons */
-    button {
+    /* Withdraw button */
+    button#withdrawBtn {
       width: 100%;
       padding: 10px;
       background: #00e99a;
@@ -73,11 +73,11 @@
       transition: background-color 0.3s ease;
       user-select: none;
     }
-    button:hover {
+    button#withdrawBtn:hover {
       background-color: #00c87a;
     }
 
-    /* Sections */
+    /* Withdraw history */
     .section {
       margin-top: 25px;
       text-align: left;
@@ -101,18 +101,18 @@
       word-break: break-word;
     }
 
-    /* Notification style */
+    /* Notification inside card top center */
     #notification {
       position: absolute;
       top: 8px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0, 233, 154, 0.85);
+      background: rgba(0, 233, 154, 0.95);
       color: #000;
-      padding: 6px 12px;
+      padding: 6px 14px;
       border-radius: 20px;
       font-weight: 600;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.5s ease;
@@ -120,13 +120,26 @@
       user-select: none;
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
       z-index: 1000;
+      max-width: 90%;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
     #notification.show {
       opacity: 1;
       pointer-events: auto;
     }
 
-    /* Referral form */
+    /* Referral code display */
+    #userReferralCode {
+      margin-top: 15px;
+      font-weight: 600;
+      color: #00e99a;
+      font-size: 1rem;
+      user-select: text;
+      word-break: break-word;
+    }
+
+    /* Referral input section */
     #referral-section {
       margin-top: 20px;
       text-align: center;
@@ -169,6 +182,39 @@
       line-height: 1.2;
     }
 
+    /* WhatsApp button */
+    #whatsapp-contact {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25d366;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+      user-select: none;
+      z-index: 1100;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+      max-width: 180px;
+      justify-content: center;
+      gap: 8px;
+    }
+    #whatsapp-contact:hover {
+      background-color: #1ebe57;
+    }
+    #whatsapp-contact svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+      flex-shrink: 0;
+    }
+
     /* Hidden iframe for formsubmit */
     #hidden_iframe {
       display:none;
@@ -178,7 +224,7 @@
     @media (max-width: 400px) {
       .container {
         max-width: 100%;
-        padding: 15px 10px;
+        padding: 15px 10px 40px;
       }
       .balance {
         font-size: 1.8rem;
@@ -186,7 +232,7 @@
       h2 {
         font-size: 1.4rem;
       }
-      button {
+      button#withdrawBtn {
         font-size: 0.95rem;
         padding: 9px;
       }
@@ -202,6 +248,15 @@
         font-size: 0.8rem;
         padding: 5px 10px;
       }
+      #whatsapp-contact {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+        max-width: 160px;
+      }
+      #whatsapp-contact svg {
+        width: 18px;
+        height: 18px;
+      }
     }
   </style>
 </head>
@@ -210,82 +265,137 @@
     <h2>USDT Miner</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
 
-    <!-- Referral form section -->
+    <!-- Show user's referral code -->
+    <div id="userReferralCode" title="Your referral code">Referral Code: <span id="referralCodeText">N/A</span></div>
+
+    <!-- Referral submission form -->
     <div id="referral-section">
       <label for="referredUser">Enter Referrer Username</label>
-      <input type="text" id="referredUser" placeholder="Referrer's username" />
+      <input type="text" id="referredUser" placeholder="Referrer's username" autocomplete="off" />
       <button id="referralSubmit">Submit Referral</button>
-      <div id="referral-message">
-        Please enter correct referred user name.<br>
-        At the withdraw stage your account will be reviewed fully.<br>
-        If we find any violation or fake referral, your account will be banned.
-      </div>
+      <div id="referral-message"></div>
     </div>
 
     <button id="withdrawBtn">Withdraw</button>
 
     <div class="section">
       <h4>Withdraw History</h4>
-      <div class="history" id="withdraw-history">No withdrawals yet.</div>
+      <div class="history" id="withdrawHistory">No withdrawals yet.</div>
     </div>
 
+    <!-- Notification -->
     <div id="notification"></div>
-
-    <!-- Hidden iframe to prevent redirect -->
-    <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
   </div>
 
+  <!-- WhatsApp Button -->
+  <a href="https://wa.me/16723004545" target="_blank" id="whatsapp-contact" aria-label="Contact on WhatsApp">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M20.52 3.48a11.72 11.72 0 0 0-16.57 0c-4.58 4.58-4.58 12.03 0 16.6l-1.73 5.65 5.79-1.72a11.78 11.78 0 0 0 6.72 2.11c6.49 0 11.77-5.28 11.77-11.78a11.7 11.7 0 0 0-3.98-8.86Zm-8.59 16.59a9.28 9.28 0 0 1-4.72-1.3l-.34-.2-3.42.96.95-3.34-.22-.35a9.31 9.31 0 1 1 7.75 3.92Zm5.1-7.15c-.28-.14-1.65-.82-1.9-.91-.25-.1-.44-.14-.63.14s-.72.9-.89 1.08c-.16.18-.32.2-.59.07a7.11 7.11 0 0 1-2.09-1.29 7.94 7.94 0 0 1-1.48-1.84c-.15-.26-.02-.4.12-.54.12-.12.27-.3.4-.46.14-.17.18-.28.28-.46a.78.78 0 0 0 .07-.66c-.07-.18-.63-1.53-.87-2.1-.23-.54-.46-.46-.63-.47h-.54a1.46 1.46 0 0 0-1.07.5 4.66 4.66 0 0 0-1.4 3.31c0 1.21.86 2.38.98 2.55.12.17 1.7 2.6 4.12 3.65a14.4 14.4 0 0 0 1.87.8 3.7 3.7 0 0 0 1.75.16 4.63 4.63 0 0 0 2.75-1.58 3.65 3.65 0 0 0 1.04-2.29c.01-.17.01-.3-.2-.44Z"/>
+    </svg>
+    Contact on WhatsApp
+  </a>
+
+  <iframe name="hidden_iframe" id="hidden_iframe"></iframe>
+
   <script>
-    // Balance & mining variables
-    let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
-    let miningStarted = false;
-    const usdtPerMs = 1 / 120000; // 1 USDT per 2 minutes
-
-    // Withdraw history
-    function updateWithdrawHistory() {
-      const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
-      const el = document.getElementById('withdraw-history');
-      el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
-    }
-
-    // Update balance display with 8 decimal places
-    function updateBalance() {
-      document.getElementById('balance').textContent = balance.toFixed(8);
-    }
-
-    // Mining function - increments balance smoothly
-    function startMining() {
-      if (!miningStarted) {
-        setInterval(() => {
-          balance += usdtPerMs * 100; // update every 100ms chunk for smooth increment
-          localStorage.setItem('usdtBalance', balance.toString());
-          updateBalance();
-        }, 100);
-        miningStarted = true;
-      }
-    }
-
-    // Handle Withdraw Button Click
-    function handleWithdraw() {
-      if (balance >= 3000) {
-        window.location.href = "withdraw.html";
-      } else {
-        alert("🚫 Minimum withdrawal amount is $3000 USDT.");
-      }
-    }
-
-    // Random notification data & function
-    const names = ["Alex", "Ayesha", "David", "Fatima", "John", "Sara", "Michael", "Zara", "Liam", "Nora", "Ethan", "Maya"];
-    const amounts = [150000, 100000, 85000, 72000, 66000, 54000, 43000, 32000, 28000, 21000];
-
+    // --- Initialization and constants ---
+    const balanceEl = document.getElementById('balance');
+    const withdrawBtn = document.getElementById('withdrawBtn');
+    const withdrawHistoryEl = document.getElementById('withdrawHistory');
     const notificationEl = document.getElementById('notification');
+    const referralCodeText = document.getElementById('referralCodeText');
+
+    // Referral submission elements
+    const referralSubmitBtn = document.getElementById('referralSubmit');
+    const referredInput = document.getElementById('referredUser');
+    const referralMessage = document.getElementById('referral-message');
+
+    // Get current user and balance from localStorage
+    let currentUser = localStorage.getItem('usdt_user');
+    if (!currentUser) {
+      // If no user, redirect to signup page
+      window.location.href = 'index.html';
+    }
+
+    // All registered users (simulate for validation)
+    let allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
+    // Add current user if not already there
+    if (!allUsers.includes(currentUser)) {
+      allUsers.push(currentUser);
+      localStorage.setItem('allUsers', JSON.stringify(allUsers));
+    }
+
+    // Save referral code = username in uppercase for display
+    referralCodeText.textContent = currentUser.toUpperCase();
+
+    // User balance, saved in localStorage as float number (simulate mining)
+    let balance = parseFloat(localStorage.getItem('balance_' + currentUser)) || 0;
+    // Balance precision to 8 decimals
+    function formatBalance(num) {
+      // Always show at least one decimal (even if whole number)
+      if (Math.floor(num) === num) {
+        return num.toFixed(1);
+      }
+      return num.toFixed(8);
+    }
+
+    // Withdraw history stored per user as array of objects {amount, date}
+    let withdrawHistory = JSON.parse(localStorage.getItem('withdrawHistory_' + currentUser) || '[]');
+
+    // --- Balance update & mining animation ---
+    function updateBalance() {
+      balanceEl.textContent = formatBalance(balance);
+      localStorage.setItem('balance_' + currentUser, balance.toString());
+    }
+
+    function addToBalance(amount) {
+      balance += amount;
+      updateBalance();
+    }
+
+    // Mining simulation: every 2 minutes add 1 USDT
+    function startMining() {
+      // Initial call:
+      setInterval(() => {
+        addToBalance(1);
+      }, 120000); // 120,000 ms = 2 minutes
+    }
+
+    // --- Withdraw handling ---
+    withdrawBtn.addEventListener('click', () => {
+      if (balance >= 3000) {
+        // Redirect to withdraw page
+        window.location.href = 'withdraw.html';
+      } else {
+        alert('Minimum balance of 3000 USDT required to withdraw.');
+      }
+    });
+
+    // --- Withdraw History update ---
+    function updateWithdrawHistory() {
+      if (withdrawHistory.length === 0) {
+        withdrawHistoryEl.textContent = 'No withdrawals yet.';
+        return;
+      }
+      withdrawHistoryEl.innerHTML = '';
+      withdrawHistory.forEach(entry => {
+        const div = document.createElement('div');
+        const d = new Date(entry.date);
+        div.textContent = `${d.toLocaleString()}: Withdrawn $${entry.amount.toFixed(2)}`;
+        withdrawHistoryEl.appendChild(div);
+      });
+    }
+
+    // --- Random Notifications ---
+    const names = ['Alex', 'Ayesha', 'John', 'Mary', 'Liam', 'Sophia', 'Noah', 'Olivia', 'Ethan', 'Isabella'];
+    const amounts = [150000, 100000, 85000, 72000, 66000, 54000, 43000, 32000, 28000, 21000];
     let lastNotificationIndex = -1;
 
     function getRandomNotification() {
       let index;
       do {
         index = Math.floor(Math.random() * names.length);
-      } while(index === lastNotificationIndex); // prevent repeat same name twice in a row
+      } while (index === lastNotificationIndex);
       lastNotificationIndex = index;
 
       const name = names[index];
@@ -293,32 +403,15 @@
       return `${name} successfully withdrew $${amount.toLocaleString()}`;
     }
 
-    // Show notification with fade-in/out animation
     function showNotification() {
-      const message = getRandomNotification();
-      notificationEl.textContent = message;
+      notificationEl.textContent = getRandomNotification();
       notificationEl.classList.add('show');
-
       setTimeout(() => {
         notificationEl.classList.remove('show');
       }, 3000);
     }
 
-    // Referral form submission logic
-    const referralSubmitBtn = document.getElementById('referralSubmit');
-    const referredInput = document.getElementById('referredUser');
-    const referralMessage = document.getElementById('referral-message');
-
-    // Get list of valid usernames (simulate or fetch from storage)
-    let allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
-
-    // Add current user if not already present (to keep list updated)
-    const currentUser = localStorage.getItem('usdt_user');
-    if (currentUser && !allUsers.includes(currentUser)) {
-      allUsers.push(currentUser);
-      localStorage.setItem('allUsers', JSON.stringify(allUsers));
-    }
-
+    // --- Referral submission form handling ---
     referralSubmitBtn.addEventListener('click', () => {
       const refUser = referredInput.value.trim();
 
@@ -366,17 +459,17 @@
       referredInput.value = '';
     });
 
-    // Initialize page
+    // --- On page load ---
     window.onload = () => {
       updateBalance();
       updateWithdrawHistory();
       startMining();
 
-      document.getElementById('withdrawBtn').addEventListener('click', handleWithdraw);
-
-      // Show notification every 2 seconds
-      showNotification(); // first immediately
-      setInterval(showNotification, 2000);
+      // Show first notification after 2 sec then every 2 sec
+      setTimeout(() => {
+        showNotification();
+        setInterval(showNotification, 2000);
+      }, 2000);
     };
   </script>
 </body>
