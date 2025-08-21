@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>USDT Miner Dashboard</title>
+  <title>Tether Wallet</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -19,47 +19,48 @@
     }
 
     .container {
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(15px);
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(12px);
       border-radius: 15px;
       padding: 30px;
-      box-shadow: 0 0 30px rgba(255, 204, 0, 0.3);
+      box-shadow: 0 0 30px rgba(38, 161, 123, 0.3);
       max-width: 400px;
       width: 90%;
       text-align: center;
     }
 
     .usdt-icon {
-      width: 60px;
-      margin-bottom: 15px;
+      width: 50px;
+      margin-bottom: 10px;
     }
 
     h2 {
-      color: #facc15;
-      margin-bottom: 10px;
+      color: #26A17B;
+      margin-bottom: 5px;
     }
 
     .balance {
       font-size: 2em;
       margin: 20px 0;
-      color: #facc15;
+      color: #26A17B;
     }
 
     button {
-      background-color: #facc15;
+      background-color: #26A17B;
       border: none;
-      padding: 10px 20px;
+      padding: 12px 20px;
       margin-top: 10px;
       border-radius: 8px;
       color: #000;
       font-size: 1em;
+      font-weight: 600;
       cursor: pointer;
       width: 100%;
       transition: background 0.3s ease;
     }
 
     button:hover {
-      background-color: #ffcd00;
+      background-color: #2bd29a;
     }
 
     .section {
@@ -71,7 +72,7 @@
       margin-bottom: 10px;
       border-bottom: 1px solid #ffffff;
       padding-bottom: 5px;
-      color: #facc15;
+      color: #26A17B;
     }
 
     .history {
@@ -88,10 +89,10 @@
 <body>
 
   <div class="container">
-    <!-- Embedded USDT Logo using Base64 -->
-    <img class="usdt-icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAACXBIWXMAAAsSAAALEgHS3X78AAAB4klEQVR4nO2YzU7DIAyG9Q+YQfaAwvN4jzN4XxFCkSde6o8mbPlqqXgAtivAcMJAAAAAAAAACCIr7y5bYO0L5UZrtrcgbALHpnk7ZzY1aZKy6gyVx21u42zkkEGNyyIRm9ybIWGIR8nHyL+PYk+N3gHv8tOjVGtbkZIGMTax/1OHvdJLAV+U6MS4WXHAg/jOTyASgrM4jAeCj+kJjFfQo0HPBzmvAAaF9U2MiOA+mh6rR5jBgtc6wlBpM4sITDJ3CbFGYbaRQ0OYf9vM0nvK0hssR3QAZ4RxuNTNjYj7JY+uMihOEzmbEF9VtsESKPTbcOHkcm1k+oZnsM0mVp4MZfKRo4Y4cAXmQyn4D15xzDnMw+XpYZEPZJ39Afcm5hbx7DdzHTDlfRgGzK/k5vw8r3ih5ME+WwwFGkIzheTCxwM7n0tVaUqq16xfceOP9oLRjA2jbD7Rj8hvfYsyedH/4ZQm1yED/3jsmMS06e+jzI2MibMQ6x+oEFudXH8EAAAAASUVORK5CYII=" alt="USDT Logo">
-    
-    <h2>USDT Miner</h2>
+    <!-- Tether Logo (Small Icon) -->
+    <img class="usdt-icon" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAMAAAC7IEhfAAAAUVBMVEUAAABtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpBtZpD///9YO8ViAAAAFnRSTlMA9vLy7Onh4ODc3NzS0sK+vr2U03bvAAABHklEQVQ4y8WTyQ7CMAwDG0iFUlH///x1spggNa2A5XGZSv49VpylRaAAqEoDH3FjGWd4CBumBchUs0kiIAii4NOuzRI2vokzq/GPu9y81VmzOkq9Xp8Vvqvl/tzh6qZUmAfwmgcz8nbJuFMkhEXKaVoR4AoKlqBM6pgvwqMo5tIC8CR7eWqxLnkt8rQAf7lIwvz1nAAA9EsF34AAAAASUVORK5CYII=" alt="USDT Icon">
+
+    <h2>Tether Wallet</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
     <button onclick="handleWithdraw()">Withdraw</button>
 
@@ -112,7 +113,7 @@
           balance += usdtPerMs;
           localStorage.setItem('usdtBalance', balance.toString());
           updateBalance();
-        }, 10); // smoother + less CPU intensive
+        }, 10);
         miningStarted = true;
       }
     }
