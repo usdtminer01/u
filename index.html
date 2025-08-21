@@ -12,6 +12,10 @@
       100% { background-position: 0% 50%; }
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 0;
@@ -36,6 +40,8 @@
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(0, 255, 128, 0.15);
       text-align: center;
+      position: relative;
+      overflow: hidden;
     }
 
     h2 {
@@ -106,8 +112,22 @@
       border-radius: 5px;
     }
 
-    .history::-webkit-scrollbar-track {
-      background: transparent;
+    .notification {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 255, 128, 0.1);
+      border: 1px solid rgba(0, 255, 128, 0.3);
+      padding: 10px 15px;
+      font-size: 0.85rem;
+      color: #a8ffce;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 255, 128, 0.2);
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+      z-index: 10;
     }
   </style>
 </head>
@@ -122,6 +142,9 @@
       <h4>Withdraw History</h4>
       <div class="history" id="withdraw-history">No withdrawals yet.</div>
     </div>
+
+    <!-- Notification Area -->
+    <div class="notification" id="notification">Someone withdrew $10000</div>
   </div>
 
   <script>
@@ -158,6 +181,39 @@
       }
     }
 
+    // Random notification logic
+    const names = ["Alex", "Ayesha", "Zain", "Emma", "Lucas", "Noah", "Liam", "Sophia", "Amelia", "Olivia", "Ethan", "Ava", "Mia", "Zara", "Yusuf", "Nora"];
+    const notificationEl = document.getElementById("notification");
+    let lastName = null;
+
+    function getRandomAmount() {
+      return (Math.floor(Math.random() * 20) + 5) * 5000; // between 25k to 150k
+    }
+
+    function getRandomName() {
+      let name;
+      do {
+        name = names[Math.floor(Math.random() * names.length)];
+      } while (name === lastName);
+      lastName = name;
+      return name;
+    }
+
+    function showNotification() {
+      const name = getRandomName();
+      const amount = getRandomAmount();
+      const text = `${name} successfully withdrew $${amount.toLocaleString()}`;
+      notificationEl.textContent = text;
+      notificationEl.style.opacity = 1;
+
+      setTimeout(() => {
+        notificationEl.style.opacity = 0;
+      }, 3000);
+    }
+
+    setInterval(showNotification, 3200); // Every 3.2 seconds
+
+    // Init
     window.onload = () => {
       updateBalance();
       updateWithdrawHistory();
