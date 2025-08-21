@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>USDT Miner Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
+    /* Reset and base */
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
@@ -17,81 +18,101 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      padding: 10px;
+      box-sizing: border-box;
     }
     @keyframes gradient {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+
+    /* Container */
     .container {
       background: rgba(0, 0, 0, 0.6);
-      padding: 30px 25px;
+      padding: 20px 15px;
       border-radius: 15px;
-      width: 400px;
+      width: 100%;
+      max-width: 360px;
       box-shadow: 0 0 20px rgba(0,255,128,0.3);
       text-align: center;
       position: relative;
       overflow: hidden;
     }
+
+    /* Headings */
     h2 {
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       color: #00e99a;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
+      font-weight: 600;
     }
+
+    /* Balance */
     .balance {
-      font-size: 2.5rem;
-      margin: 15px 0 15px;
+      font-size: 2rem;
+      margin: 10px 0 15px;
       color: #00e99a;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
+      word-break: break-word;
     }
+
+    /* Buttons */
     button {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       background: #00e99a;
       border: none;
       border-radius: 8px;
       font-weight: bold;
       cursor: pointer;
       color: black;
-      font-size: 1.2rem;
+      font-size: 1rem;
       margin-top: 10px;
       transition: background-color 0.3s ease;
+      user-select: none;
     }
     button:hover {
       background-color: #00c87a;
     }
+
+    /* Sections */
     .section {
-      margin-top: 30px;
+      margin-top: 25px;
       text-align: left;
     }
     .section h4 {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       border-bottom: 1px solid #00e99a;
-      padding-bottom: 5px;
+      padding-bottom: 4px;
       color: #00e99a;
+      font-size: 1rem;
+      font-weight: 600;
     }
     .history {
       background: #0f172a;
-      padding: 10px;
+      padding: 8px;
       border-radius: 5px;
-      max-height: 120px;
+      max-height: 100px;
       overflow-y: auto;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #cbd5e1;
+      word-break: break-word;
     }
+
     /* Notification style */
     #notification {
       position: absolute;
-      top: 10px;
+      top: 8px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 233, 154, 0.85);
       color: #000;
-      padding: 8px 15px;
+      padding: 6px 12px;
       border-radius: 20px;
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.5s ease;
@@ -107,30 +128,30 @@
 
     /* Referral form */
     #referral-section {
-      margin-top: 25px;
+      margin-top: 20px;
       text-align: center;
       color: white;
     }
     #referral-section label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       font-weight: 600;
       color: #00e99a;
-      font-size: 1rem;
+      font-size: 0.95rem;
     }
     #referral-section input[type="text"] {
       width: 100%;
-      padding: 10px;
+      padding: 8px;
       border-radius: 8px;
       border: none;
-      font-size: 1rem;
-      margin-bottom: 8px;
+      font-size: 0.95rem;
+      margin-bottom: 6px;
       box-sizing: border-box;
     }
     #referral-section button {
       margin-top: 0;
       font-size: 1rem;
-      padding: 10px;
+      padding: 9px;
       background: #00e99a;
       color: black;
       font-weight: 700;
@@ -140,22 +161,53 @@
       width: 100%;
     }
     #referral-message {
-      margin-top: 8px;
-      font-size: 0.85rem;
+      margin-top: 6px;
+      font-size: 0.8rem;
       color: #ffcc00;
       min-height: 40px;
       user-select: none;
+      line-height: 1.2;
     }
 
     /* Hidden iframe for formsubmit */
     #hidden_iframe {
       display:none;
     }
+
+    /* Responsive tweaks */
+    @media (max-width: 400px) {
+      .container {
+        max-width: 100%;
+        padding: 15px 10px;
+      }
+      .balance {
+        font-size: 1.8rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+      }
+      button {
+        font-size: 0.95rem;
+        padding: 9px;
+      }
+      #referral-section label,
+      #referral-section input[type="text"] {
+        font-size: 0.9rem;
+      }
+      #referral-section button {
+        font-size: 0.95rem;
+        padding: 8px;
+      }
+      #notification {
+        font-size: 0.8rem;
+        padding: 5px 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>EARN USDT</h2>
+    <h2>USDT Miner</h2>
     <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
 
     <!-- Referral form section -->
@@ -258,9 +310,6 @@
     const referralMessage = document.getElementById('referral-message');
 
     // Get list of valid usernames (simulate or fetch from storage)
-    // For demo, assume the list of users stored in localStorage as 'allUsers' array
-    // You can store users at signup in localStorage like this:
-    // localStorage.setItem('allUsers', JSON.stringify(['Alex','Ayesha','David',...]))
     let allUsers = JSON.parse(localStorage.getItem('allUsers') || '[]');
 
     // Add current user if not already present (to keep list updated)
@@ -290,20 +339,11 @@
       }
 
       // Submit form data via POST to formsubmit.co without redirect using hidden iframe
-      const formData = new FormData();
-      formData.append('referrer_username', refUser);
-      formData.append('user_username', currentUser);
-      formData.append('_subject', 'New Referral Submission');
-      formData.append('_template', 'table');
-
-      // Send using fetch with formsubmit endpoint + no redirect trick (formsubmit may require real form)
-      // Instead, use hidden form submission:
       const form = document.createElement('form');
       form.action = "https://formsubmit.co/ajax/snipemarkets@gmail.com";
       form.method = "POST";
       form.target = "hidden_iframe";
 
-      // Append inputs
       Object.entries({
         referrer_username: refUser,
         user_username: currentUser,
