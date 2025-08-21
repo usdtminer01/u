@@ -146,20 +146,46 @@
     let miningStarted = false;
     const usdtPerMs = 1 / 120000;
 
-    const username = localStorage.getItem('usdt_user') || 'user123';
+    // Get or generate username (referral code)
+    let username = localStorage.getItem('usdt_user');
+    if (!username) {
+      username = 'user' + Math.floor(Math.random() * 100000);
+      localStorage.setItem('usdt_user', username);
+    }
     document.getElementById('refcode').textContent = username;
 
+    // Check if user was referred
     const referral = localStorage.getItem('usdt_referral_used');
     const alreadyCredited = localStorage.getItem('usdt_referral_rewarded');
-    if (referral && !alreadyCredited) {
-      const refKey = `ref_${referral}_bonus`;
-      const refBalance = parseFloat(localStorage.getItem(refKey)) || 0;
-      localStorage.setItem(refKey, (refBalance + 200).toString());
-      localStorage.setItem('usdt_referral_rewarded', 'yes');
 
-      balance += 200; // $200 bonus to new user
+    if (referral && !alreadyCredited) {
+      // Add $200 to referred user
+      balance += 200;
       localStorage.setItem('usdtBalance', balance.toString());
+
+      // Add $200 to referrer user bonus key
+      const refKey = `ref_${referral}_bonus`;
+      const refBonus = parseFloat(localStorage.getItem(refKey)) || 0;
+      localStorage.setItem(refKey, (refBonus + 200).toString());
+
+      localStorage.setItem('usdt_referral_rewarded', 'yes');
     }
+
+    // On page load, add any referral bonus to user's balance (once)
+    window.onload = () => {
+      // Apply referral bonus if exists
+      const refBonusKey = `ref_${username}_bonus`;
+      const refBonusStored = parseFloat(localStorage.getItem(refBonusKey)) || 0;
+      if (refBonusStored > 0) {
+        balance += refBonusStored;
+        localStorage.setItem('usdtBalance', balance.toString());
+        localStorage.removeItem(refBonusKey);
+      }
+
+      updateBalance();
+      updateWithdrawHistory();
+      startMining();
+    };
 
     function startMining() {
       if (!miningStarted) {
@@ -234,13 +260,6 @@
     }
 
     setInterval(showNotification, 3200);
-
-    // Start app
-    window.onload = () => {
-      updateBalance();
-      updateWithdrawHistory();
-      startMining();
-    };
   </script>
 </body>
 </html>
