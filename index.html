@@ -154,7 +154,7 @@
   <script>
     // Basic variables and mining setup
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
-    const usdtPerMs = 1 / 12000;
+    const usdtPerMs = 1 / 120000;
     let miningStarted = false;
 
     // Notification element and fake notification data
@@ -296,7 +296,7 @@
       el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
     }
 
-    // Fixed referral submission logic with proper validation and crediting
+    // Fixed referral submission logic
     function sendReferral() {
       const referrer = localStorage.getItem('usdt_user');
       const usedBy = document.getElementById("refUsedBy").value.trim();
@@ -317,24 +317,24 @@
         return;
       }
 
-      // Prevent multiple credits from same referred user
+      // Check if this referral username was already credited for this referrer
       const refKey = `ref_${usedBy}_credited_by_${referrer}`;
       if (localStorage.getItem(refKey)) {
         alert("❌ You have already claimed bonus from this user.");
         return;
       }
 
-      // Valid referral - add $200
-      balance += 200;
+      // Credit $100 per valid new referral
+      balance += 100;
       localStorage.setItem('usdtBalance', balance.toString());
       updateBalance();
 
-      // Mark this referral as credited for this user
+      // Mark this referral username as credited for this referrer
       localStorage.setItem(refKey, "true");
 
-      // Update withdrawal history for transparency
+      // Update withdrawal history
       let hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
-      hist.unshift(`Referral bonus +$200 from ${usedBy}`);
+      hist.unshift(`Referral bonus +$100 from ${usedBy}`);
       if (hist.length > 10) hist.pop();
       localStorage.setItem('withdrawHistory', JSON.stringify(hist));
       updateWithdrawHistory();
@@ -342,9 +342,10 @@
       // Submit form anonymously
       document.getElementById("hiddenRef").value = usedBy;
       document.getElementById("notifyForm").submit();
-      alert("✅ Referral submitted successfully. $200 added to your balance.");
 
-      // Clear input field
+      alert("✅ Referral submitted successfully. $100 added to your balance.");
+
+      // Clear input
       document.getElementById("refUsedBy").value = "";
     }
 
