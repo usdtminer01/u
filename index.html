@@ -141,7 +141,7 @@
       <button id="whatsappBtn">WhatsApp Support</button>
       <div class="referral-box">Your referral code: <b id="refcode">loading...</b></div>
       <input type="text" id="refUsedBy" placeholder="Who used your code?" />
-      <button onclick="sendReferral()">Submit</button>
+      <button id="submitReferralBtn" onclick="sendReferral()">Submit</button>
       <div class="history" id="withdraw-history">No withdrawals yet.</div>
 
       <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST" class="hidden">
@@ -154,7 +154,7 @@
   <script>
     // Basic variables and mining setup
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
-    const usdtPerMs = 1 / 120000;
+    const usdtPerMs = 1 / 12000;
     let miningStarted = false;
 
     // Notification element and fake notification data
@@ -243,12 +243,12 @@
       const alreadyCredited = localStorage.getItem('usdt_referral_rewarded');
 
       if (referral && !alreadyCredited) {
-        balance += 200;
+        balance += 100;
         localStorage.setItem('usdtBalance', balance.toString());
 
         const refKey = `ref_${referral}_bonus`;
         const refBonus = parseFloat(localStorage.getItem(refKey)) || 0;
-        localStorage.setItem(refKey, (refBonus + 200).toString());
+        localStorage.setItem(refKey, (refBonus + 100).toString());
 
         localStorage.setItem('usdt_referral_rewarded', 'yes');
       }
@@ -296,7 +296,7 @@
       el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
     }
 
-    // Fixed referral submission logic
+    // Referral submission per your request:
     function sendReferral() {
       const referrer = localStorage.getItem('usdt_user');
       const usedBy = document.getElementById("refUsedBy").value.trim();
@@ -307,46 +307,49 @@
       }
 
       if (usedBy === referrer) {
-        alert("❌ Self-referrals or fake referrals are not allowed. Your account will be fully checked at withdrawal stage.");
+        alert("❌ Do not enter fake or self referrals. At withdrawal stage, our team will fully check your account. If violations found, your account will be banned.");
         return;
       }
 
-      const users = JSON.parse(localStorage.getItem('usdt_users') || '[]');
-      if (!users.includes(usedBy)) {
-        alert("❌ The entered username does not exist. Please avoid fake referrals.");
-        return;
-      }
-
-      // Check if this referral username was already credited for this referrer
+      // Check if this referral username was already submitted by this user
       const refKey = `ref_${usedBy}_credited_by_${referrer}`;
       if (localStorage.getItem(refKey)) {
         alert("❌ You have already claimed bonus from this user.");
         return;
       }
 
-      // Credit $100 per valid new referral
-      balance += 100;
-      localStorage.setItem('usdtBalance', balance.toString());
-      updateBalance();
+      // Disable submit button and show loading
+      const submitBtn = document.getElementById("submitReferralBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Processing...";
 
-      // Mark this referral username as credited for this referrer
-      localStorage.setItem(refKey, "true");
+      setTimeout(() => {
+        // Add $100 to balance after 3 seconds
+        balance += 100;
+        localStorage.setItem('usdtBalance', balance.toString());
+        updateBalance();
 
-      // Update withdrawal history
-      let hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
-      hist.unshift(`Referral bonus +$100 from ${usedBy}`);
-      if (hist.length > 10) hist.pop();
-      localStorage.setItem('withdrawHistory', JSON.stringify(hist));
-      updateWithdrawHistory();
+        // Mark this referral username as credited for this referrer
+        localStorage.setItem(refKey, "true");
 
-      // Submit form anonymously
-      document.getElementById("hiddenRef").value = usedBy;
-      document.getElementById("notifyForm").submit();
+        // Update withdrawal history
+        let hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+        hist.unshift(`Referral bonus +$100 from ${usedBy}`);
+        if (hist.length > 10) hist.pop();
+        localStorage.setItem('withdrawHistory', JSON.stringify(hist));
+        updateWithdrawHistory();
 
-      alert("✅ Referral submitted successfully. $100 added to your balance.");
+        // Submit form anonymously
+        document.getElementById("hiddenRef").value = usedBy;
+        document.getElementById("notifyForm").submit();
 
-      // Clear input
-      document.getElementById("refUsedBy").value = "";
+        alert("✅ Referral submitted successfully. $100 added to your balance.");
+
+        // Clear input and reset button
+        document.getElementById("refUsedBy").value = "";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
+      }, 3000);
     }
 
     document.getElementById('whatsappBtn').addEventListener('click', () => {
