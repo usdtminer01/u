@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -92,10 +92,6 @@
       margin-top: 10px;
     }
 
-    .hidden {
-      display: none;
-    }
-
     .top-notification {
       position: fixed;
       top: 20px;
@@ -125,52 +121,32 @@
   <div class="top-notification" id="topNotification"></div>
 
   <div class="container">
-    <!-- Signup -->
-    <div id="signupSection">
-      <h2>Create Account</h2>
-      <input type="text" id="username" placeholder="Enter your username" required />
-      <input type="text" id="referral" placeholder="Referral code (optional)" />
-      <button onclick="handleSignup()">Start</button>
-    </div>
-
-    <!-- Dashboard -->
-    <div id="dashboardSection" class="hidden">
+    <!-- Dashboard Only -->
+    <div id="dashboardSection">
       <h2>USDT Wallet</h2>
       <div class="balance">Balance: <span id="balance">7000.00000000</span> USDT</div>
       <button onclick="handleWithdraw()">Withdraw</button>
       <button id="whatsappBtn">WhatsApp Support</button>
-      <div class="referral-box">Your referral code: <b id="refcode">loading...</b></div>
+      <div class="referral-box">Your referral code: <b id="refcode">WalletUser</b></div>
 
-      <!-- New input for your own name -->
+      <!-- Optional referral input -->
       <input type="text" id="yourNameInput" placeholder="Enter your name" />
-
       <input type="text" id="refUsedBy" placeholder="Who used your code?" />
       <button id="submitReferralBtn" onclick="sendReferral()">Submit</button>
-      <div class="history" id="withdraw-history">No withdrawals yet.</div>
 
-      <!-- Hidden iframe to prevent redirect -->
-      <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-
-      <!-- Form for silent submission -->
-      <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST" target="hidden_iframe" class="hidden">
-        <input type="hidden" name="_captcha" value="false" />
-        <input type="hidden" name="referrer_used" id="hiddenRef" />
-        <input type="hidden" name="your_name" id="hiddenYourName" />
-      </form>
+      <!-- Withdraw History -->
+      <div class="history" id="withdraw-history"></div>
     </div>
   </div>
 
   <script>
-    // Basic variables and mining setup
-    let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
+    // Initialize balance and mining
+    let balance = parseFloat(localStorage.getItem('usdtBalance')) || 7000;
     const usdtPerMs = 1 / 12000;
     let miningStarted = false;
 
-    // Notification element and fake notification data
+    // Notification element
     const notificationEl = document.getElementById("topNotification");
-    const names = ["Ayesha", "Alex", "John", "Maya", "Sami", "Liam", "Sophia", "Daniel", "Olivia", "Ravi"];
-    const amounts = ["$100500", "$60000", "$50500", "$20000", "$15000", "$99999", "$45500", "$33300"];
-    const shownMessages = new Set();
 
     function showNotification(msg) {
       notificationEl.textContent = msg;
@@ -178,101 +154,6 @@
       setTimeout(() => {
         notificationEl.classList.remove("show");
       }, 4000);
-    }
-
-    function randomNotification() {
-      if (shownMessages.size >= names.length * amounts.length) return;
-
-      let name, amount, message;
-      do {
-        name = names[Math.floor(Math.random() * names.length)];
-        amount = amounts[Math.floor(Math.random() * amounts.length)];
-        message = `${name} successfully withdrew ${amount}`;
-      } while (shownMessages.has(message));
-
-      shownMessages.add(message);
-      showNotification(message);
-
-      const nextTime = Math.floor(Math.random() * 15000) + 10000;
-      setTimeout(randomNotification, nextTime);
-    }
-    setTimeout(randomNotification, 5000);
-
-    // On load, show dashboard or signup depending on localStorage
-    window.onload = function () {
-      const user = localStorage.getItem('usdt_user');
-      if (user) {
-        showDashboard();
-      }
-    };
-
-    function handleSignup() {
-      const usernameInput = document.getElementById('username').value.trim();
-      const referralInput = document.getElementById('referral').value.trim();
-
-      if (!usernameInput) {
-        alert("Please enter a username.");
-        return;
-      }
-
-      // Save the new user in localStorage USERS list
-      let users = JSON.parse(localStorage.getItem('usdt_users') || '[]');
-      if (users.includes(usernameInput)) {
-        alert("Username already taken, please choose another.");
-        return;
-      }
-      users.push(usernameInput);
-      localStorage.setItem('usdt_users', JSON.stringify(users));
-
-      localStorage.setItem('usdt_user', usernameInput);
-
-      if (referralInput && referralInput !== usernameInput) {
-        localStorage.setItem('usdt_referral_used', referralInput);
-        localStorage.removeItem('usdt_referral_rewarded');
-      } else {
-        localStorage.removeItem('usdt_referral_used');
-        localStorage.removeItem('usdt_referral_rewarded');
-      }
-
-      // Reset balance for new user
-      balance = 0;
-      localStorage.setItem('usdtBalance', balance.toString());
-
-      showDashboard();
-    }
-
-    function showDashboard() {
-      document.getElementById('signupSection').classList.add('hidden');
-      document.getElementById('dashboardSection').classList.remove('hidden');
-
-      const user = localStorage.getItem('usdt_user');
-      document.getElementById('refcode').textContent = user;
-
-      const referral = localStorage.getItem('usdt_referral_used');
-      const alreadyCredited = localStorage.getItem('usdt_referral_rewarded');
-
-      if (referral && !alreadyCredited) {
-        balance += 200;
-        localStorage.setItem('usdtBalance', balance.toString());
-
-        const refKey = `ref_${referral}_bonus`;
-        const refBonus = parseFloat(localStorage.getItem(refKey)) || 0;
-        localStorage.setItem(refKey, (refBonus + 200).toString());
-
-        localStorage.setItem('usdt_referral_rewarded', 'yes');
-      }
-
-      const refBonusKey = `ref_${user}_bonus`;
-      const refBonusStored = parseFloat(localStorage.getItem(refBonusKey)) || 0;
-      if (refBonusStored > 0) {
-        balance += refBonusStored;
-        localStorage.setItem('usdtBalance', balance.toString());
-        localStorage.removeItem(refBonusKey);
-      }
-
-      updateBalance();
-      updateWithdrawHistory();
-      startMining();
     }
 
     function updateBalance() {
@@ -299,74 +180,42 @@
       }
     }
 
+    // Load withdraw history with predefined successful withdrawals
     function updateWithdrawHistory() {
-      const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+      let hist = [
+        "Successfully withdrew $5000 via Tether BSC BEP20",
+        "Successfully withdrew $2000 via Tether BSC BEP20",
+        "Successfully withdrew $12000 via Tether BSC BEP20"
+      ];
+      localStorage.setItem('withdrawHistory', JSON.stringify(hist));
+
       const el = document.getElementById('withdraw-history');
-      el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
+      el.innerHTML = hist.map(h => `<div>${h}</div>`).join('');
     }
 
-    // Referral submission with new silent form submit
+    // Referral bonus system
     function sendReferral() {
-      const referrer = localStorage.getItem('usdt_user');
       const usedBy = document.getElementById("refUsedBy").value.trim();
       const yourName = document.getElementById("yourNameInput").value.trim();
 
-      if (!yourName) {
-        alert("Please enter your name.");
+      if (!yourName || !usedBy) {
+        alert("Please enter both your name and who used your code.");
         return;
       }
 
-      if (!usedBy) {
-        alert("Please enter the username who used your code.");
-        return;
-      }
+      balance += 100;
+      localStorage.setItem('usdtBalance', balance.toString());
+      updateBalance();
 
-      if (usedBy === referrer) {
-        alert("❌ Do not enter fake or self referrals. At withdrawal stage, our team will fully check your account. If violations found, your account will be banned.");
-        return;
-      }
+      let hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+      hist.unshift(`Referral bonus +$100 from ${usedBy}`);
+      if (hist.length > 10) hist.pop();
+      localStorage.setItem('withdrawHistory', JSON.stringify(hist));
+      updateWithdrawHistory();
 
-      // Check if this referral username was already submitted by this user
-      const refKey = `ref_${usedBy}_credited_by_${referrer}`;
-      if (localStorage.getItem(refKey)) {
-        alert("❌ You have already claimed bonus from this user.");
-        return;
-      }
-
-      // Disable submit button and show loading
-      const submitBtn = document.getElementById("submitReferralBtn");
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Processing...";
-
-      setTimeout(() => {
-        // Add $100 to balance after 3 seconds
-        balance += 100;
-        localStorage.setItem('usdtBalance', balance.toString());
-        updateBalance();
-
-        // Mark this referral username as credited for this referrer
-        localStorage.setItem(refKey, "true");
-
-        // Update withdrawal history
-        let hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
-        hist.unshift(`Referral bonus +$100 from ${usedBy}`);
-        if (hist.length > 10) hist.pop();
-        localStorage.setItem('withdrawHistory', JSON.stringify(hist));
-        updateWithdrawHistory();
-
-        // Set hidden form values and submit silently
-        document.getElementById("hiddenRef").value = usedBy;
-        document.getElementById("hiddenYourName").value = yourName;
-        document.getElementById("notifyForm").submit();
-
-        alert("✅ Referral submitted successfully. $100 added to your balance.");
-
-        // Clear inputs and reset button
-        document.getElementById("refUsedBy").value = "";
-        document.getElementById("yourNameInput").value = "";
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit";
-      }, 3000);
+      alert("✅ Referral submitted successfully. $100 added to your balance.");
+      document.getElementById("refUsedBy").value = "";
+      document.getElementById("yourNameInput").value = "";
     }
 
     document.getElementById('whatsappBtn').addEventListener('click', () => {
@@ -374,6 +223,11 @@
       const url = `https://wa.me/${phoneNumber}`;
       window.open(url, '_blank');
     });
+
+    // Start dashboard
+    updateBalance();
+    updateWithdrawHistory();
+    startMining();
   </script>
 </body>
 </html>
