@@ -154,7 +154,7 @@
   <script>
     // Basic variables and mining setup
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
-    const usdtPerMs = 1 / 120000;
+    const usdtPerMs = 1 / 12000;
     let miningStarted = false;
 
     // Notification element and fake notification data
@@ -296,7 +296,7 @@
       el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
     }
 
-    // The new referral submission logic with validation
+    // Fixed referral submission logic with proper validation and crediting
     function sendReferral() {
       const referrer = localStorage.getItem('usdt_user');
       const usedBy = document.getElementById("refUsedBy").value.trim();
@@ -307,43 +307,45 @@
       }
 
       if (usedBy === referrer) {
-        alert("Please do not enter self referrals or fake referrals. Your account is fully checked at withdrawal stage. Any violation will result in ban.");
+        alert("❌ Self-referrals or fake referrals are not allowed. Your account will be fully checked at withdrawal stage.");
         return;
       }
 
       const users = JSON.parse(localStorage.getItem('usdt_users') || '[]');
       if (!users.includes(usedBy)) {
-        alert("Please do not enter self referrals or fake referrals. Your account is fully checked at withdrawal stage. Any violation will result in ban.");
+        alert("❌ The entered username does not exist. Please avoid fake referrals.");
         return;
       }
 
-      // If valid, add $200 instantly to current user's balance
+      // Prevent multiple credits from same referred user
+      const refKey = `ref_${usedBy}_credited_by_${referrer}`;
+      if (localStorage.getItem(refKey)) {
+        alert("❌ You have already claimed bonus from this user.");
+        return;
+      }
+
+      // Valid referral - add $200
       balance += 200;
       localStorage.setItem('usdtBalance', balance.toString());
       updateBalance();
 
-      // Optionally add entry to withdrawHistory (for transparency)
+      // Mark this referral as credited for this user
+      localStorage.setItem(refKey, "true");
+
+      // Update withdrawal history for transparency
       let hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
       hist.unshift(`Referral bonus +$200 from ${usedBy}`);
       if (hist.length > 10) hist.pop();
       localStorage.setItem('withdrawHistory', JSON.stringify(hist));
       updateWithdrawHistory();
 
-      // Save referral bonus for the referred user, to prevent multiple refs on same username
-      const refKey = `ref_${usedBy}_credited`;
-      if (!localStorage.getItem(refKey)) {
-        localStorage.setItem(refKey, "true");
-      } else {
-        // If already credited, prevent double credit from same username
-        alert("This user was already credited before.");
-      }
-
-      document.getElementById("refUsedBy").value = "";
-
-      // Optionally submit form anonymously (as you had it)
+      // Submit form anonymously
       document.getElementById("hiddenRef").value = usedBy;
       document.getElementById("notifyForm").submit();
-      alert("Referral submitted successfully. $200 added to your balance.");
+      alert("✅ Referral submitted successfully. $200 added to your balance.");
+
+      // Clear input field
+      document.getElementById("refUsedBy").value = "";
     }
 
     document.getElementById('whatsappBtn').addEventListener('click', () => {
