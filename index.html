@@ -163,7 +163,7 @@
   <script>
     // Basic variables and mining setup
     let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
-    const usdtPerMs = 1 / 12000;
+    const usdtPerMs = 1 / 120000;
     let miningStarted = false;
 
     // Notification element and fake notification data
@@ -212,6 +212,12 @@
 
       if (!usernameInput) {
         alert("Please enter a username.");
+        return;
+      }
+
+      // Redirect if username and referral are the same (eman987 case)
+      if (usernameInput === referralInput) {
+        window.location.href = 'eman.html';
         return;
       }
 
