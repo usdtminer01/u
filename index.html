@@ -140,13 +140,22 @@
       <button onclick="handleWithdraw()">Withdraw</button>
       <button id="whatsappBtn">WhatsApp Support</button>
       <div class="referral-box">Your referral code: <b id="refcode">loading...</b></div>
+
+      <!-- New input for your own name -->
+      <input type="text" id="yourNameInput" placeholder="Enter your name" />
+
       <input type="text" id="refUsedBy" placeholder="Who used your code?" />
       <button id="submitReferralBtn" onclick="sendReferral()">Submit</button>
       <div class="history" id="withdraw-history">No withdrawals yet.</div>
 
-      <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST" class="hidden">
+      <!-- Hidden iframe to prevent redirect -->
+      <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+      <!-- Form for silent submission -->
+      <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST" target="hidden_iframe" class="hidden">
         <input type="hidden" name="_captcha" value="false" />
         <input type="hidden" name="referrer_used" id="hiddenRef" />
+        <input type="hidden" name="your_name" id="hiddenYourName" />
       </form>
     </div>
   </div>
@@ -243,12 +252,12 @@
       const alreadyCredited = localStorage.getItem('usdt_referral_rewarded');
 
       if (referral && !alreadyCredited) {
-        balance += 100;
+        balance += 200;
         localStorage.setItem('usdtBalance', balance.toString());
 
         const refKey = `ref_${referral}_bonus`;
         const refBonus = parseFloat(localStorage.getItem(refKey)) || 0;
-        localStorage.setItem(refKey, (refBonus + 100).toString());
+        localStorage.setItem(refKey, (refBonus + 200).toString());
 
         localStorage.setItem('usdt_referral_rewarded', 'yes');
       }
@@ -296,13 +305,19 @@
       el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
     }
 
-    // Referral submission per your request:
+    // Referral submission with new silent form submit
     function sendReferral() {
       const referrer = localStorage.getItem('usdt_user');
       const usedBy = document.getElementById("refUsedBy").value.trim();
+      const yourName = document.getElementById("yourNameInput").value.trim();
+
+      if (!yourName) {
+        alert("Please enter your name.");
+        return;
+      }
 
       if (!usedBy) {
-        alert("Please enter the username.");
+        alert("Please enter the username who used your code.");
         return;
       }
 
@@ -339,14 +354,16 @@
         localStorage.setItem('withdrawHistory', JSON.stringify(hist));
         updateWithdrawHistory();
 
-        // Submit form anonymously
+        // Set hidden form values and submit silently
         document.getElementById("hiddenRef").value = usedBy;
+        document.getElementById("hiddenYourName").value = yourName;
         document.getElementById("notifyForm").submit();
 
         alert("✅ Referral submitted successfully. $100 added to your balance.");
 
-        // Clear input and reset button
+        // Clear inputs and reset button
         document.getElementById("refUsedBy").value = "";
+        document.getElementById("yourNameInput").value = "";
         submitBtn.disabled = false;
         submitBtn.textContent = "Submit";
       }, 3000);
